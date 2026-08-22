@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vayal — Direct from the Field</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --field-dark:#1F3D2B;
+    --field-darker:#162C1F;
+    --parchment:#F2E9D8;
+    --parchment-deep:#E8DCC4;
+    --turmeric:#D9A441;
+    --turmeric-deep:#B9862F;
+    --chili:#C1442E;
+    --soil:#33261A;
+    --soil-soft:#6B5C4B;
+    --leaf:#5C8A5A;
+    --card-shadow: 0 3px 0 rgba(51,38,26,0.12), 0 10px 20px -12px rgba(51,38,26,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--parchment);
+    color:var(--soil);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--turmeric); color:var(--soil);}
+
+  /* ---------- texture ---------- */
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:999; opacity:0.035; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  h1,h2,h3,.display{ font-family:'Zilla Slab', serif; margin:0; color:var(--soil); }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+
+  /* ---------- header ---------- */
+  header.top{
+    background:var(--field-dark);
+    color:var(--parchment);
+    padding:18px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:50;
+    border-bottom:3px solid var(--turmeric);
+  }
+  .brand{ display:flex; align-items:baseline; gap:10px; }
+  .brand .mark{
+    font-family:'Zilla Slab', serif; font-weight:700; font-size:26px; letter-spacing:0.5px;
+  }
+  .brand .tag{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--turmeric);
+  }
+  .role-toggle{
+    display:flex; background:var(--field-darker); border-radius:999px; padding:4px; gap:2px;
+    border:1px solid rgba(242,233,216,0.15);
+  }
+  .role-toggle button{
+    border:none; background:transparent; color:rgba(242,233,216,0.65);
+    padding:9px 18px; border-radius:999px; font-size:13.5px; font-weight:600;
+    transition:all .2s ease;
+  }
+  .role-toggle button.active{ background:var(--turmeric); color:var(--soil); }
+
+  /* ---------- language toggle ---------- */
+  .lang-toggle{
+    display:flex; background:var(--field-darker); border-radius:999px; padding:4px; gap:2px;
+    border:1px solid rgba(242,233,216,0.15);
+  }
+  .lang-toggle button{
+    border:none; background:transparent; color:rgba(242,233,216,0.65);
+    padding:9px 14px; border-radius:999px; font-size:12.5px; font-weight:700;
+    transition:all .2s ease; font-family:'IBM Plex Mono',monospace; letter-spacing:0.5px;
+  }
+  .lang-toggle button.active{ background:var(--turmeric); color:var(--soil); }
+  .auth-lang-toggle{
+    display:flex; justify-content:center; gap:2px; background:var(--parchment-deep);
+    border-radius:999px; padding:4px; width:fit-content; margin:0 auto 16px;
+  }
+  .auth-lang-toggle button{
+    border:none; background:transparent; color:var(--soil-soft);
+    padding:7px 16px; border-radius:999px; font-size:12px; font-weight:700;
+    font-family:'IBM Plex Mono',monospace; letter-spacing:0.5px; transition:all .15s ease;
+  }
+  .auth-lang-toggle button.active{ background:var(--chili); color:#fff; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:var(--field-dark); color:var(--parchment);
+    padding:56px 32px 70px; position:relative; overflow:hidden;
+  }
+  .hero::after{
+    content:""; position:absolute; right:-60px; bottom:-90px; width:320px; height:320px;
+    border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(217,164,65,0.25), transparent 70%);
+  }
+  .hero-inner{ max-width:1180px; margin:0 auto; position:relative; z-index:2; }
+  .hero h1{
+    font-size:clamp(32px,4.4vw,52px); line-height:1.08; max-width:15ch; font-weight:700;
+  }
+  .hero .eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--turmeric); margin-bottom:14px; display:block;
+  }
+  .hero p.sub{
+    max-width:52ch; color:rgba(242,233,216,0.8); font-size:16px; line-height:1.6; margin-top:16px;
+  }
+  .hero-stats{ display:flex; gap:28px; margin-top:32px; flex-wrap:wrap; }
+  .hero-stats div{ border-left:2px solid var(--turmeric); padding-left:12px; }
+  .hero-stats .num{ font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600; }
+  .hero-stats .lbl{ font-size:12px; color:rgba(242,233,216,0.65); }
+
+  /* ---------- signboard search ---------- */
+  .signboard{
+    background:var(--parchment); border-radius:10px; padding:22px;
+    box-shadow:0 20px 40px -18px rgba(0,0,0,0.5);
+    border:1px solid var(--parchment-deep);
+    position:relative; z-index:2;
+  }
+  .signboard::before{
+    content:"MARKET SEARCH"; position:absolute; top:-11px; left:20px; background:var(--chili); color:var(--parchment);
+    font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:2px; padding:4px 10px; border-radius:3px;
+  }
+  .field-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+  .field-row .grp{ flex:1; min-width:150px; }
+  .field-row label{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--soil-soft); margin-bottom:5px; font-weight:600; }
+  .field-row input, .field-row select{
+    width:100%; padding:11px 12px; border-radius:7px; border:1.5px solid var(--parchment-deep);
+    background:#fff; font-family:'Inter',sans-serif; font-size:14px; color:var(--soil);
+  }
+  .field-row input:focus, .field-row select:focus{ outline:2px solid var(--turmeric); outline-offset:1px; border-color:var(--turmeric); }
+  .btn{
+    border:none; border-radius:7px; padding:12px 20px; font-weight:700; font-size:14px;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:focus-visible{ outline:3px solid var(--field-dark); outline-offset:2px; }
+  .btn-primary{ background:var(--chili); color:#fff; box-shadow:0 3px 0 #8f3221; }
+  .btn-primary:hover{ transform:translateY(-1px); }
+  .btn-primary:active{ transform:translateY(1px); box-shadow:0 1px 0 #8f3221; }
+  .btn-ghost{ background:transparent; border:1.5px solid var(--field-dark); color:var(--field-dark); }
+  .btn-ghost:hover{ background:var(--field-dark); color:var(--parchment); }
+  .btn-turmeric{ background:var(--turmeric); color:var(--soil); box-shadow:0 3px 0 var(--turmeric-deep); }
+  .btn-turmeric:hover{ transform:translateY(-1px); }
+  .btn-small{ padding:8px 13px; font-size:12.5px; border-radius:6px; }
+
+  /* ---------- main layout ---------- */
+  main{ max-width:1180px; margin:0 auto; padding:40px 32px 90px; }
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
+  .section-head h2{ font-size:24px; }
+  .count-pill{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; background:var(--parchment-deep); padding:5px 12px; border-radius:999px; color:var(--soil-soft);
+  }
+
+  .chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+  .chip{
+    border:1.5px solid var(--parchment-deep); background:#fff; padding:7px 14px; border-radius:999px;
+    font-size:13px; font-weight:600; color:var(--soil-soft);
+  }
+  .chip.active{ background:var(--leaf); border-color:var(--leaf); color:#fff; }
+
+  /* ---------- crate tag cards ---------- */
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:22px; }
+
+  .tag-card{
+    background:#fff; border-radius:4px; position:relative; padding:20px 18px 18px;
+    box-shadow:var(--card-shadow);
+    border:1px solid var(--parchment-deep);
+    display:flex; flex-direction:column; gap:10px;
+    transform:rotate(var(--tilt,0deg));
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .tag-card:hover{ transform:rotate(0deg) translateY(-3px); box-shadow:0 6px 0 rgba(51,38,26,0.12), 0 16px 26px -12px rgba(51,38,26,0.4); }
+  .tag-card::before{
+    /* punch hole */
+    content:""; position:absolute; top:-9px; left:22px; width:16px; height:16px; border-radius:50%;
+    background:var(--parchment); border:2px solid var(--parchment-deep);
+  }
+  .tag-card.sold::after{
+    content:attr(data-sold-label); position:absolute; top:14px; right:-30px; background:var(--chili); color:#fff;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; letter-spacing:1px;
+    padding:5px 34px; transform:rotate(28deg); box-shadow:0 2px 6px rgba(0,0,0,0.25);
+  }
+  .tag-card.sold{ opacity:0.62; }
+  .crop-row{ display:flex; align-items:center; gap:10px; }
+  .crop-emoji{ font-size:28px; line-height:1; }
+  .crop-name{ font-size:18px; font-weight:600; font-family:'Zilla Slab',serif; }
+  .farmer-line{ font-size:12.5px; color:var(--soil-soft); }
+  .meta-row{ display:flex; justify-content:space-between; align-items:flex-end; margin-top:2px; }
+  .price{
+    font-family:'IBM Plex Mono',monospace; color:var(--chili); font-weight:700; font-size:20px;
+  }
+  .price span{ font-size:11px; color:var(--soil-soft); font-weight:500; }
+  .qty{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--soil-soft); }
+  .stamp{
+    align-self:flex-start; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.5px;
+    border:1.5px dashed var(--leaf); color:var(--leaf); padding:3px 8px; border-radius:4px; transform:rotate(-3deg);
+  }
+  .card-actions{ display:flex; gap:8px; margin-top:6px; }
+  .card-actions .btn{ flex:1; }
+  .cat-badge{
+    display:inline-flex; align-items:center; gap:4px; font-family:'IBM Plex Mono',monospace; font-size:10px;
+    font-weight:700; letter-spacing:0.5px; text-transform:uppercase; padding:3px 8px; border-radius:999px;
+    align-self:flex-start;
+  }
+  .cat-badge.cat-vegetable{ background:#e8f1e7; color:var(--leaf); border:1px solid var(--leaf); }
+  .cat-badge.cat-fruit{ background:#faf0da; color:var(--turmeric-deep); border:1px solid var(--turmeric); }
+  .cat-badge.cat-grain{ background:#efe6d8; color:var(--soil-soft); border:1px solid var(--parchment-deep); }
+  .cat-badge.cat-other{ background:#efe6d8; color:var(--soil-soft); border:1px solid var(--parchment-deep); }
+  .shop-link-btn{
+    background:none; border:none; padding:0; font-size:12.5px; color:var(--chili); font-weight:700;
+    text-decoration:underline; text-underline-offset:2px; cursor:pointer;
+  }
+  .shop-link-btn:hover{ color:var(--soil); }
+
+  /* ---------- pay method ---------- */
+  .pay-options{ display:flex; gap:10px; margin-top:6px; }
+  .pay-opt{
+    flex:1; display:flex; align-items:center; gap:8px; border:1.5px solid var(--parchment-deep); background:#fff;
+    border-radius:7px; padding:10px 12px; cursor:pointer; font-size:13px; font-weight:600; color:var(--soil-soft);
+    transition:all .15s ease;
+  }
+  .pay-opt input{ margin:0; accent-color:var(--chili); }
+  .pay-opt.checked{ border-color:var(--chili); background:#fbeae6; color:var(--soil); }
+  .pay-pill{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px;
+    padding:4px 10px; border-radius:999px; background:var(--parchment-deep); color:var(--soil-soft); display:inline-block;
+  }
+
+  /* ---------- shop (seller) modal ---------- */
+  .modal.modal-wide{ max-width:560px; }
+  .shop-item-list{ max-height:340px; overflow-y:auto; margin:4px -4px 0; padding:0 4px; }
+  .cat-group-label{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase;
+    color:var(--soil-soft); margin:16px 0 8px; font-weight:700;
+  }
+  .cat-group-label:first-child{ margin-top:4px; }
+  .shop-item-row{
+    display:flex; align-items:center; gap:10px; background:#fff; border:1.5px solid var(--parchment-deep);
+    border-radius:7px; padding:10px 12px; margin-bottom:8px;
+  }
+  .shop-item-row.unchecked{ opacity:0.5; }
+  .shop-item-row input[type="checkbox"]{ width:17px; height:17px; accent-color:var(--chili); flex-shrink:0; }
+  .sir-info{ flex:1; min-width:0; }
+  .sir-name{ font-weight:600; font-size:13.5px; }
+  .sir-sub{ font-size:11.5px; color:var(--soil-soft); font-family:'IBM Plex Mono',monospace; }
+  .sir-qty{ width:64px; padding:6px 7px; border-radius:5px; border:1.5px solid var(--parchment-deep); font-size:13px; text-align:center; }
+  .shop-modal-total{
+    display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:14px;
+    border-top:1.5px dashed var(--parchment-deep); font-weight:700; font-size:15px;
+  }
+  .shop-modal-total .amt{ font-family:'IBM Plex Mono',monospace; color:var(--chili); font-size:19px; }
+
+  /* ---------- farmer dashboard ---------- */
+  .dash-grid{ display:grid; grid-template-columns:340px 1fr; gap:28px; align-items:start; }
+  @media (max-width: 820px){ .dash-grid{ grid-template-columns:1fr; } }
+
+  .ledger-panel{
+    background:var(--field-dark); color:var(--parchment); border-radius:10px; padding:22px;
+    position:sticky; top:90px;
+  }
+  .ledger-panel h3{ color:var(--parchment); font-size:19px; margin-bottom:4px; }
+  .ledger-panel .hint{ font-size:12.5px; color:rgba(242,233,216,0.6); margin-bottom:18px; }
+  .ledger-panel label{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--turmeric); margin:14px 0 6px; font-weight:700; }
+  .ledger-panel input, .ledger-panel select{
+    width:100%; padding:10px 11px; border-radius:6px; border:none; background:rgba(242,233,216,0.1);
+    color:var(--parchment); font-size:14px; border:1.5px solid rgba(242,233,216,0.2);
+  }
+  .ledger-panel input::placeholder{ color:rgba(242,233,216,0.45); }
+  .ledger-panel input:focus, .ledger-panel select:focus{ outline:2px solid var(--turmeric); border-color:var(--turmeric); }
+  .ledger-panel .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .ledger-panel .btn{ width:100%; margin-top:20px; }
+
+  .my-listing-row{
+    background:#fff; border:1px solid var(--parchment-deep); border-radius:8px; padding:14px 16px;
+    display:flex; align-items:center; gap:14px; margin-bottom:12px; box-shadow:0 2px 0 rgba(51,38,26,0.06);
+  }
+  .my-listing-row.sold{ opacity:0.55; }
+  .my-listing-row .crop-emoji{ font-size:24px; }
+  .mlr-info{ flex:1; min-width:0; }
+  .mlr-info .name{ font-weight:600; font-family:'Zilla Slab',serif; font-size:16px; }
+  .mlr-info .sub{ font-size:12px; color:var(--soil-soft); font-family:'IBM Plex Mono',monospace; }
+  .mlr-actions{ display:flex; gap:8px; flex-shrink:0; }
+  .icon-btn{
+    border:1.5px solid var(--parchment-deep); background:#fff; border-radius:6px; padding:7px 10px; font-size:12.5px; font-weight:600; color:var(--soil);
+  }
+  .icon-btn:hover{ background:var(--parchment-deep); }
+  .icon-btn.danger{ color:var(--chili); border-color:#e9c3ba; }
+  .icon-btn.danger:hover{ background:#fbeae6; }
+
+  .empty{
+    text-align:center; padding:50px 20px; color:var(--soil-soft); border:2px dashed var(--parchment-deep); border-radius:10px;
+  }
+  .empty .display{ font-size:18px; margin-bottom:6px; }
+
+  /* ---------- modal ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(22,44,31,0.55); backdrop-filter:blur(2px);
+    display:none; align-items:center; justify-content:center; z-index:200; padding:20px;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    background:var(--parchment); border-radius:12px; max-width:420px; width:100%; padding:26px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.5); border:1px solid var(--parchment-deep);
+    animation:pop .18s ease;
+  }
+  @keyframes pop{ from{ transform:scale(0.95); opacity:0; } to{ transform:scale(1); opacity:1; } }
+  .modal h3{ font-size:20px; margin-bottom:4px; }
+  .modal .modal-sub{ font-size:13px; color:var(--soil-soft); margin-bottom:18px; font-family:'IBM Plex Mono',monospace; }
+  .modal label{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--soil-soft); margin:12px 0 5px; font-weight:700; }
+  .modal input, .modal textarea{
+    width:100%; padding:10px 11px; border-radius:6px; border:1.5px solid var(--parchment-deep); font-family:'Inter',sans-serif; font-size:14px; background:#fff;
+  }
+  .modal textarea{ resize:vertical; min-height:70px; }
+  .modal-actions{ display:flex; gap:10px; margin-top:20px; }
+  .modal-actions .btn{ flex:1; }
+  .modal-close{
+    position:absolute; top:14px; right:14px; background:none; border:none; font-size:20px; color:var(--soil-soft); line-height:1;
+  }
+  .modal{ position:relative; }
+  .toast{
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); opacity:0;
+    background:var(--field-dark); color:var(--parchment); padding:13px 22px; border-radius:8px; font-size:14px; font-weight:600;
+    box-shadow:0 10px 30px -10px rgba(0,0,0,0.5); z-index:300; transition:all .25s ease; border-left:4px solid var(--turmeric);
+    pointer-events:none;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  footer{ text-align:center; padding:26px; font-size:12px; color:var(--soil-soft); font-family:'IBM Plex Mono',monospace; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+  @media (max-width:600px){
+    header.top{ flex-direction:column; gap:12px; align-items:flex-start; }
+    .role-toggle{ width:100%; }
+    .role-toggle button{ flex:1; }
+  }
+
+  /* ---------- auth gate ---------- */
+  .auth-screen{
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:var(--field-dark); padding:24px; position:relative; overflow:hidden;
+  }
+  .auth-screen::before{
+    content:""; position:absolute; top:-120px; left:-100px; width:360px; height:360px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(217,164,65,0.22), transparent 70%);
+  }
+  .auth-screen::after{
+    content:""; position:absolute; bottom:-140px; right:-100px; width:400px; height:400px; border-radius:50%;
+    background:radial-gradient(circle at 60% 60%, rgba(92,138,90,0.25), transparent 70%);
+  }
+  .auth-card{
+    position:relative; z-index:2; width:100%; max-width:400px; background:var(--parchment);
+    border-radius:12px; padding:30px 28px 26px; box-shadow:0 30px 60px -20px rgba(0,0,0,0.55);
+    border:1px solid var(--parchment-deep);
+  }
+  .auth-brand{ text-align:center; margin-bottom:6px; }
+  .auth-brand .mark{ font-family:'Zilla Slab',serif; font-weight:700; font-size:28px; }
+  .auth-brand .tag{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--chili);
+  }
+  .auth-tabs{
+    display:flex; margin:22px 0 4px; border-bottom:2px solid var(--parchment-deep);
+  }
+  .auth-tabs button{
+    flex:1; background:none; border:none; padding:11px 4px; font-weight:700; font-size:14px; color:var(--soil-soft);
+    border-bottom:2px solid transparent; margin-bottom:-2px; transition:all .15s ease;
+  }
+  .auth-tabs button.active{ color:var(--chili); border-bottom-color:var(--chili); }
+  .role-pick{ display:flex; gap:10px; margin:14px 0 2px; }
+  .role-pick label{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; text-align:center;
+    border:1.5px solid var(--parchment-deep); border-radius:8px; padding:12px 8px; cursor:pointer;
+    font-size:12.5px; font-weight:600; color:var(--soil-soft); transition:all .15s ease; background:#fff;
+  }
+  .role-pick input{ position:absolute; opacity:0; pointer-events:none; }
+  .role-pick .ic{ font-size:20px; }
+  .role-pick label.picked{ border-color:var(--leaf); background:rgba(92,138,90,0.1); color:var(--soil); }
+  .auth-hint{ font-size:12px; color:var(--soil-soft); background:var(--parchment-deep); padding:8px 10px; border-radius:6px; margin-top:10px; line-height:1.5; }
+  .auth-form label{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--soil-soft); margin:14px 0 5px; font-weight:700; }
+  .auth-form input{
+    width:100%; padding:11px 12px; border-radius:7px; border:1.5px solid var(--parchment-deep); background:#fff; font-size:14px;
+  }
+  .auth-form input:focus{ outline:2px solid var(--turmeric); border-color:var(--turmeric); }
+  .auth-error{
+    background:#fbeae6; color:var(--chili); border:1px solid #e9c3ba; border-radius:6px; padding:9px 12px;
+    font-size:12.5px; margin-top:14px; display:none; font-weight:600;
+  }
+  .auth-error.show{ display:block; }
+  .auth-submit{ width:100%; margin-top:20px; }
+  .auth-switch-note{ text-align:center; font-size:12.5px; color:var(--soil-soft); margin-top:16px; }
+  .auth-switch-note button{ background:none; border:none; color:var(--chili); font-weight:700; text-decoration:underline; padding:0; }
+
+  .user-chip{
+    display:flex; align-items:center; gap:10px; background:var(--field-darker); padding:6px 6px 6px 14px;
+    border-radius:999px; border:1px solid rgba(242,233,216,0.15);
+  }
+  .user-chip .who{ font-size:13px; }
+  .user-chip .who b{ font-weight:700; }
+  .user-chip .who .rl{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--turmeric); text-transform:uppercase; letter-spacing:1px; display:block; }
+  .user-chip button{
+    background:var(--chili); color:#fff; border:none; border-radius:999px; padding:7px 14px; font-size:12px; font-weight:700;
+  }
+  .header-right{ display:flex; align-items:center; gap:14px; }
+
+  /* ---------- subnav ---------- */
+  .subnav{ display:flex; gap:6px; border-bottom:2px solid var(--parchment-deep); margin-bottom:4px; }
+  .subnav-btn{
+    background:none; border:none; padding:10px 6px; margin-right:20px; font-weight:700; font-size:14.5px;
+    color:var(--soil-soft); border-bottom:3px solid transparent; margin-bottom:-2px; transition:all .15s ease;
+    display:flex; align-items:center; gap:8px;
+  }
+  .subnav-btn.active{ color:var(--soil); border-bottom-color:var(--chili); }
+  .subnav-btn .count-pill{ padding:2px 8px; font-size:11px; }
+
+  /* ---------- order cards ---------- */
+  .order-card{
+    background:#fff; border:1px solid var(--parchment-deep); border-radius:8px; padding:16px 18px;
+    margin-bottom:12px; box-shadow:0 2px 0 rgba(51,38,26,0.06);
+  }
+  .order-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap; }
+  .order-crop{ font-family:'Zilla Slab',serif; font-weight:600; font-size:17px; display:flex; align-items:center; gap:8px; }
+  .order-sub{ font-size:12.5px; color:var(--soil-soft); margin-top:3px; }
+  .order-total{ font-family:'IBM Plex Mono',monospace; font-weight:700; color:var(--chili); font-size:17px; text-align:right; }
+  .order-total .lbl{ display:block; font-size:10.5px; color:var(--soil-soft); font-weight:500; text-transform:uppercase; letter-spacing:0.5px; }
+  .status-pill{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px;
+    padding:4px 10px; border-radius:999px; display:inline-block;
+  }
+  .status-pending{ background:#faf0da; color:var(--turmeric-deep); border:1px solid var(--turmeric); }
+  .status-confirmed{ background:#e8f1e7; color:var(--leaf); border:1px solid var(--leaf); }
+  .status-fulfilled{ background:#e8e2d4; color:var(--soil-soft); border:1px solid var(--parchment-deep); }
+  .status-cancelled{ background:#fbeae6; color:var(--chili); border:1px solid #e9c3ba; }
+  .order-note{ font-size:13px; color:var(--soil); margin-top:10px; background:var(--parchment); padding:9px 12px; border-radius:6px; }
+  .order-contact{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; margin-top:8px; color:var(--soil-soft); }
+  .order-bottom{ display:flex; justify-content:space-between; align-items:center; margin-top:12px; flex-wrap:wrap; gap:10px; }
+  .order-actions{ display:flex; gap:8px; }
+
+  /* ---------- nearby shops ---------- */
+  .shop-card{
+    background:#fff; border:1px solid var(--parchment-deep); border-radius:8px; padding:16px 18px;
+    margin-bottom:12px; box-shadow:0 2px 0 rgba(51,38,26,0.06); display:flex; gap:14px; align-items:flex-start;
+  }
+  .shop-emoji{ font-size:26px; line-height:1.2; flex-shrink:0; }
+  .shop-info{ flex:1; min-width:0; }
+  .shop-name{ font-family:'Zilla Slab',serif; font-weight:600; font-size:16.5px; }
+  .shop-addr{ font-size:12.5px; color:var(--soil-soft); margin-top:2px; }
+  .shop-meta{ display:flex; gap:12px; align-items:center; margin-top:8px; flex-wrap:wrap; font-size:12.5px; color:var(--soil-soft); }
+  .shop-rating{ font-family:'IBM Plex Mono',monospace; font-weight:700; color:var(--turmeric-deep); }
+  .shop-open{ font-weight:700; }
+  .shop-open.yes{ color:var(--leaf); }
+  .shop-open.no{ color:var(--chili); }
+  .shop-actions{ display:flex; gap:8px; margin-top:10px; flex-shrink:0; }
+  .shop-note{
+    font-size:12px; color:var(--soil-soft); background:var(--parchment-deep); padding:10px 14px; border-radius:8px; margin-bottom:16px; line-height:1.5;
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<!-- ================= AUTH GATE ================= -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-lang-toggle" id="authLangToggle">
+      <button id="authLangEn" class="active" onclick="setLang('en')">English</button>
+      <button id="authLangTa" onclick="setLang('ta')">தமிழ்</button>
+    </div>
+    <div class="auth-brand">
+      <div class="mark">Vayal</div>
+      <div class="tag" data-i18n="tagline">Direct from the field</div>
+    </div>
+
+    <div class="auth-tabs">
+      <button id="tabLogin" class="active" onclick="switchAuthTab('login')" data-i18n="logIn">Log in</button>
+      <button id="tabSignup" onclick="switchAuthTab('signup')" data-i18n="signUp">Sign up</button>
+    </div>
+
+    <!-- LOGIN -->
+    <form id="loginForm" class="auth-form" onsubmit="return handleLogin(event)">
+      <label for="loginPhone" data-i18n="phoneNumber">Phone number</label>
+      <input id="loginPhone" required data-i18n-ph="phonePlaceholder" placeholder="10-digit mobile number" pattern="[0-9]{10}" inputmode="numeric">
+      <label for="loginPassword" data-i18n="password">Password</label>
+      <input id="loginPassword" type="password" required data-i18n-ph="passwordPlaceholder" placeholder="Your password">
+      <div class="auth-error" id="loginError"></div>
+      <button type="submit" class="btn btn-primary auth-submit" data-i18n="logIn">Log in</button>
+    </form>
+
+    <!-- SIGNUP -->
+    <form id="signupForm" class="auth-form" style="display:none;" onsubmit="return handleSignup(event)">
+      <label data-i18n="iAmA">I am a</label>
+      <div class="role-pick">
+        <label id="pickBuyer" class="picked">
+          <input type="radio" name="signupRole" value="buyer" checked onchange="pickRole('buyer')">
+          <span class="ic">🧺</span> <span data-i18n="roleBuyer">Buyer</span>
+        </label>
+        <label id="pickFarmer">
+          <input type="radio" name="signupRole" value="farmer" onchange="pickRole('farmer')">
+          <span class="ic">🌾</span> <span data-i18n="roleFarmer">Farmer</span>
+        </label>
+        <label id="pickShop">
+          <input type="radio" name="signupRole" value="shop" onchange="pickRole('shop')">
+          <span class="ic">🏪</span> <span data-i18n="roleShop">Shop</span>
+        </label>
+      </div>
+      <div class="auth-hint" id="shopHint" style="display:none;" data-i18n="shopHint">Shops browse and order in bulk, just like buyers — plus you'll show up to farmers as a wholesale outlet.</div>
+      <div id="shopNameField" style="display:none;">
+        <label for="signupShopName" data-i18n="shopName">Shop name</label>
+        <input id="signupShopName" data-i18n-ph="shopNamePlaceholder" placeholder="e.g. Kaveri Fresh Mart">
+      </div>
+      <label for="signupName" data-i18n="yourName">Your name</label>
+      <input id="signupName" required data-i18n-ph="yourNamePlaceholder" placeholder="e.g. Muthu Kumar">
+      <label for="signupPhone" data-i18n="phoneNumber">Phone number</label>
+      <input id="signupPhone" required data-i18n-ph="phonePlaceholder" placeholder="10-digit mobile number" pattern="[0-9]{10}" inputmode="numeric">
+      <label for="signupLocation" data-i18n="villageLocation">Village / location</label>
+      <input id="signupLocation" required data-i18n-ph="villagePlaceholder" placeholder="e.g. Erode">
+      <label for="signupPassword" data-i18n="setPassword">Set a password</label>
+      <input id="signupPassword" type="password" required data-i18n-ph="setPasswordPlaceholder" placeholder="At least 4 characters" minlength="4">
+      <div class="auth-error" id="signupError"></div>
+      <button type="submit" class="btn btn-primary auth-submit" data-i18n="createAccount">Create account</button>
+    </form>
+
+    <div class="auth-switch-note" id="authSwitchNote">
+      New to Vayal? <button type="button" onclick="switchAuthTab('signup')">Create an account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="appRoot" style="display:none;">
+<header class="top">
+  <div class="brand">
+    <span class="mark">Vayal</span>
+    <span class="tag" data-i18n="tagline">Direct from the field</span>
+  </div>
+  <div class="header-right">
+    <div class="lang-toggle" role="tablist" aria-label="Choose language">
+      <button id="appLangEn" class="active" onclick="setLang('en')">EN</button>
+      <button id="appLangTa" onclick="setLang('ta')">தமிழ்</button>
+    </div>
+    <div class="role-toggle" role="tablist" aria-label="Choose your role">
+      <button id="btnBuyer" class="active" onclick="setRole('buyer')" data-i18n="imBuying">I'm buying</button>
+      <button id="btnFarmer" onclick="setRole('farmer')" data-i18n="imSelling">I'm selling</button>
+    </div>
+    <div class="user-chip" id="userChip">
+      <div class="who"><span class="rl" id="chipRole">Buyer</span><b id="chipName">—</b></div>
+      <button onclick="logout()" data-i18n="logOut">Log out</button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= BUYER VIEW ================= -->
+<div id="viewBuyer">
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow" data-i18n="buyerEyebrow">No middlemen · No markup</span>
+      <h1 data-i18n="buyerH1">Buy produce straight off the farmer's crate.</h1>
+      <p class="sub" data-i18n="buyerSub">Browse what's fresh nearby, see the price the farmer actually set, and send your order directly — today's harvest, not last week's warehouse stock.</p>
+      <div class="hero-stats">
+        <div><div class="num" id="statListings">—</div><div class="lbl" data-i18n="activeListings">Active listings</div></div>
+        <div><div class="num" id="statFarmers">—</div><div class="lbl" data-i18n="farmersOnVayal">Farmers on Vayal</div></div>
+        <div><div class="num">0%</div><div class="lbl" data-i18n="commissionTaken">Commission taken</div></div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="subnav" id="buyerSubnav">
+      <button class="subnav-btn active" onclick="switchBuyerTab('browse')" data-i18n="browseProduce">Browse produce</button>
+      <button class="subnav-btn" onclick="switchBuyerTab('orders')"><span data-i18n="myOrders">My orders</span> <span class="count-pill" id="myOrderCount">0</span></button>
+      <button class="subnav-btn" onclick="switchBuyerTab('shops')" data-i18n="nearbyShops">Nearby shops</button>
+    </div>
+
+    <div id="browseSection">
+    <div class="signboard" style="margin-top:14px;">
+      <div class="field-row">
+        <div class="grp">
+          <label for="searchCrop" data-i18n="cropOrKeyword">Crop or keyword</label>
+          <input id="searchCrop" type="text" data-i18n-ph="cropSearchPlaceholder" placeholder="e.g. tomato, turmeric...">
+        </div>
+        <div class="grp">
+          <label for="searchLoc" data-i18n="location">Location</label>
+          <input id="searchLoc" type="text" data-i18n-ph="locationSearchPlaceholder" placeholder="e.g. Erode, Bhavani...">
+        </div>
+        <div class="grp" style="max-width:170px;">
+          <label for="filterCategory" data-i18n="category">Category</label>
+          <select id="filterCategory">
+            <option value="all" data-i18n="categoryAll">All produce</option>
+            <option value="vegetable" data-i18n="categoryVegetable">Vegetables</option>
+            <option value="fruit" data-i18n="categoryFruit">Fruits</option>
+            <option value="grain" data-i18n="categoryGrain">Grains</option>
+            <option value="other" data-i18n="categoryOther">Other</option>
+          </select>
+        </div>
+        <div class="grp" style="max-width:170px;">
+          <label for="sortBy" data-i18n="sortBy">Sort by</label>
+          <select id="sortBy">
+            <option value="nearest" data-i18n="sortNearest">Nearest first</option>
+            <option value="cheap" data-i18n="sortCheap">Price: low to high</option>
+            <option value="fresh" data-i18n="sortFresh">Freshest first</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:34px;">
+      <div class="section-head">
+        <h2 data-i18n="freshListings">Fresh listings</h2>
+        <span class="count-pill" id="listingCount">0 results</span>
+      </div>
+      <div class="chips" id="cropChips"></div>
+      <div class="grid" id="listingGrid"></div>
+      <div class="empty" id="emptyBuyer" style="display:none;">
+        <div class="display" data-i18n="noProduceMatch">No produce matches that search</div>
+        <div data-i18n="noProduceMatchSub">Try a different crop, or widen the location.</div>
+      </div>
+    </div>
+    </div>
+
+    <div id="ordersSection" style="display:none; margin-top:14px;">
+      <div class="section-head">
+        <h2 data-i18n="ordersPlaced">Orders you've placed</h2>
+        <span class="count-pill" id="myOrderCount2">0 orders</span>
+      </div>
+      <div id="myOrdersList"></div>
+      <div class="empty" id="emptyOrders" style="display:none;">
+        <div class="display" data-i18n="noOrdersYet">No orders yet</div>
+        <div data-i18n="noOrdersYetSubBuyer">Orders you place from the marketplace will show up here.</div>
+      </div>
+    </div>
+
+    <div id="buyerShopsSection" style="display:none; margin-top:14px;">
+      <div class="section-head">
+        <h2 data-i18n="realShopsNear">Real shops near you</h2>
+        <span class="count-pill" id="shopCountBuyer">0 shops</span>
+      </div>
+      <div class="shop-note" data-i18n="shopNoteBuyer">Actual grocery stores and markets in your area — handy for pickup, or to compare prices before you order online.</div>
+      <div id="shopsGridBuyer"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ================= FARMER VIEW ================= -->
+<div id="viewFarmer" style="display:none;">
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow" data-i18n="farmerEyebrow">Your stall, your price</span>
+      <h1 data-i18n="farmerH1">List what you've harvested. Set your own price.</h1>
+      <p class="sub" data-i18n="farmerSub">Add quantity, price and your village — buyers nearby find you directly. Update or mark a listing sold out the moment your crate empties.</p>
+    </div>
+  </section>
+
+  <main>
+    <div class="subnav" id="farmerSubnav">
+      <button class="subnav-btn active" onclick="switchFarmerTab('listings')" data-i18n="myListings">My listings</button>
+      <button class="subnav-btn" onclick="switchFarmerTab('orders')"><span data-i18n="ordersReceived">Orders received</span> <span class="count-pill" id="incomingOrderCount">0</span></button>
+      <button class="subnav-btn" onclick="switchFarmerTab('shops')" data-i18n="sellToRealShops">Sell to real shops</button>
+    </div>
+
+    <div id="farmerListingsSection">
+    <div class="dash-grid" style="margin-top:14px;">
+      <div class="ledger-panel">
+        <h3 id="formTitle" data-i18n="addAListing">Add a listing</h3>
+        <div class="hint" data-i18n="takesUnderMinute">Takes under a minute.</div>
+        <form id="listingForm" onsubmit="return handleAddListing(event)">
+          <label for="fCrop" data-i18n="crop">Crop</label>
+          <input id="fCrop" required data-i18n-ph="cropPlaceholder" placeholder="e.g. Tomato, Coconut...">
+
+          <div class="two-col">
+            <div>
+              <label for="fQty" data-i18n="quantity">Quantity</label>
+              <input id="fQty" type="number" min="0" step="0.1" required placeholder="50">
+            </div>
+            <div>
+              <label for="fUnit" data-i18n="unit">Unit</label>
+              <select id="fUnit">
+                <option value="kg" data-i18n="unitKg">kg</option>
+                <option value="quintal" data-i18n="unitQuintal">quintal</option>
+                <option value="dozen" data-i18n="unitDozen">dozen</option>
+                <option value="crate" data-i18n="unitCrate">crate</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="fPrice" data-i18n="pricePerUnit">Price per unit (₹)</label>
+          <input id="fPrice" type="number" min="0" step="0.5" required placeholder="28">
+
+          <label for="fLoc" data-i18n="yourVillageLocation">Your village / location</label>
+          <input id="fLoc" required data-i18n-ph="villageListingPlaceholder" placeholder="e.g. Kavindapadi, Erode">
+
+          <label for="fName" data-i18n="yourName">Your name</label>
+          <input id="fName" required placeholder="e.g. Muthu Kumar" readonly style="opacity:.75;">
+
+          <input type="hidden" id="fEditId" value="">
+          <button type="submit" class="btn btn-turmeric" id="formSubmitBtn" data-i18n="listThisProduce">List this produce</button>
+        </form>
+      </div>
+
+      <div>
+        <div class="section-head">
+          <h2 data-i18n="myListings">My listings</h2>
+          <span class="count-pill" id="myListingCount">0 total</span>
+        </div>
+        <div id="myListings"></div>
+        <div class="empty" id="emptyFarmer" style="display:none;">
+          <div class="display" data-i18n="noListingsYet">You haven't listed anything yet</div>
+          <div data-i18n="noListingsYetSub">Fill the form on the left to put your first crate up for sale.</div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div id="farmerOrdersSection" style="display:none; margin-top:14px;">
+      <div class="section-head">
+        <h2 data-i18n="ordersForYourProduce">Orders for your produce</h2>
+        <span class="count-pill" id="incomingOrderCount2">0 orders</span>
+      </div>
+      <div id="incomingOrdersList"></div>
+      <div class="empty" id="emptyIncoming" style="display:none;">
+        <div class="display" data-i18n="noOrdersYet">No orders yet</div>
+        <div data-i18n="noOrdersYetSubFarmer">When a buyer orders or inquires about your produce, it'll show up here with their contact number.</div>
+      </div>
+    </div>
+
+    <div id="farmerShopsSection" style="display:none; margin-top:14px;">
+      <div class="section-head">
+        <h2 data-i18n="realShopsThatBuy">Real shops that buy produce</h2>
+        <span class="count-pill" id="shopCountFarmer">0 shops</span>
+      </div>
+      <div class="shop-note" data-i18n="shopNoteFarmer">These are real grocery stores, markets and supermarkets near you. Many buy wholesale directly from farmers — call ahead and ask for their purchase manager.</div>
+      <div id="shopsGridFarmer"></div>
+    </div>
+  </main>
+</div>
+
+<footer data-i18n="footerText">VAYAL — a direct farmer-to-buyer produce marketplace · prototype build</footer>
+</div><!-- /#appRoot -->
+
+<!-- inquiry modal -->
+<div class="overlay" id="inquiryOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+    <h3 id="modalCropName" data-i18n="orderProduce">Order produce</h3>
+    <div class="modal-sub" id="modalFarmerLine"></div>
+    <form onsubmit="return submitInquiry(event)">
+      <label for="buyerName" data-i18n="yourName">Your name</label>
+      <input id="buyerName" required data-i18n-ph="yourNamePlaceholderShort" placeholder="Your name">
+      <label for="buyerPhone" data-i18n="phoneNumber">Phone number</label>
+      <input id="buyerPhone" required data-i18n-ph="phonePlaceholder" placeholder="10-digit mobile number" pattern="[0-9]{10}">
+      <label for="orderQty" data-i18n="quantityYouWant">Quantity you want</label>
+      <input id="orderQty" type="number" min="0.1" step="0.1" required placeholder="e.g. 10">
+      <label for="orderNote" data-i18n="noteOptional">Note (optional)</label>
+      <textarea id="orderNote" data-i18n-ph="notePlaceholder" placeholder="Pickup time, delivery request, etc."></textarea>
+      <label data-i18n="paymentMethod">Payment method</label>
+      <div class="pay-options" id="payOptionsInquiry">
+        <label class="pay-opt checked"><input type="radio" name="payMethodInquiry" value="cod" checked onchange="updatePayOptUI('payOptionsInquiry')"> <span data-i18n="cashOnDelivery">Cash on delivery</span></label>
+        <label class="pay-opt"><input type="radio" name="payMethodInquiry" value="upi" onchange="updatePayOptUI('payOptionsInquiry')"> <span data-i18n="upiPayment">UPI payment</span></label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal()" data-i18n="cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary" data-i18n="sendOrder">Send order</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- shop (seller) modal — order every product from one shop in a single go -->
+<div class="overlay" id="shopOverlay">
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeShopModal()" aria-label="Close">✕</button>
+    <h3 id="shopModalName" data-i18n="shopProducts">Shop products</h3>
+    <div class="modal-sub" id="shopModalSub"></div>
+    <form onsubmit="return submitShopOrder(event)">
+      <div class="shop-item-list" id="shopItemList"></div>
+      <div class="shop-modal-total">
+        <span data-i18n="total_label">Total</span>
+        <span class="amt" id="shopModalTotal">₹0</span>
+      </div>
+      <label for="shopBuyerName" data-i18n="yourName">Your name</label>
+      <input id="shopBuyerName" required data-i18n-ph="yourNamePlaceholderShort" placeholder="Your name">
+      <label for="shopBuyerPhone" data-i18n="phoneNumber">Phone number</label>
+      <input id="shopBuyerPhone" required data-i18n-ph="phonePlaceholder" placeholder="10-digit mobile number" pattern="[0-9]{10}">
+      <label for="shopOrderNote" data-i18n="noteOptional">Note (optional)</label>
+      <textarea id="shopOrderNote" data-i18n-ph="notePlaceholder" placeholder="Pickup time, delivery request, etc."></textarea>
+      <label data-i18n="paymentMethod">Payment method</label>
+      <div class="pay-options" id="payOptionsShop">
+        <label class="pay-opt checked"><input type="radio" name="payMethodShop" value="cod" checked onchange="updatePayOptUI('payOptionsShop')"> <span data-i18n="cashOnDelivery">Cash on delivery</span></label>
+        <label class="pay-opt"><input type="radio" name="payMethodShop" value="upi" onchange="updatePayOptUI('payOptionsShop')"> <span data-i18n="upiPayment">UPI payment</span></label>
+      </div>
+      <div class="auth-error" id="shopOrderError"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeShopModal()" data-i18n="cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary" data-i18n="orderAllFromShop">Order all selected</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ======================= I18N ======================= */
+const LANG_KEY = 'vayal_lang_v1';
+const I18N = {
+  en: {
+    tagline: "Direct from the field",
+    logIn: "Log in", signUp: "Sign up",
+    phoneNumber: "Phone number", phonePlaceholder: "10-digit mobile number",
+    password: "Password", passwordPlaceholder: "Your password",
+    iAmA: "I am a", roleBuyer: "Buyer", roleFarmer: "Farmer", roleShop: "Shop",
+    shopHint: "Shops browse and order in bulk, just like buyers — plus you'll show up to farmers as a wholesale outlet.",
+    shopName: "Shop name", shopNamePlaceholder: "e.g. Kaveri Fresh Mart",
+    yourName: "Your name", yourNamePlaceholder: "e.g. Muthu Kumar", yourNamePlaceholderShort: "Your name",
+    villageLocation: "Village / location", villagePlaceholder: "e.g. Erode",
+    setPassword: "Set a password", setPasswordPlaceholder: "At least 4 characters",
+    createAccount: "Create account",
+    newToVayal: "New to Vayal?", createAnAccount: "Create an account",
+    alreadyHaveAccount: "Already have an account?",
+    imBuying: "I'm buying", imSelling: "I'm selling", logOut: "Log out",
+    buyerEyebrow: "No middlemen · No markup",
+    buyerH1: "Buy produce straight off the farmer's crate.",
+    buyerSub: "Browse what's fresh nearby, see the price the farmer actually set, and send your order directly — today's harvest, not last week's warehouse stock.",
+    activeListings: "Active listings", farmersOnVayal: "Farmers on Vayal", commissionTaken: "Commission taken",
+    browseProduce: "Browse produce", myOrders: "My orders", nearbyShops: "Nearby shops",
+    cropOrKeyword: "Crop or keyword", cropSearchPlaceholder: "e.g. tomato, turmeric...",
+    location: "Location", locationSearchPlaceholder: "e.g. Erode, Bhavani...",
+    sortBy: "Sort by", sortNearest: "Nearest first", sortCheap: "Price: low to high", sortFresh: "Freshest first",
+    freshListings: "Fresh listings",
+    noProduceMatch: "No produce matches that search", noProduceMatchSub: "Try a different crop, or widen the location.",
+    ordersPlaced: "Orders you've placed",
+    noOrdersYet: "No orders yet",
+    noOrdersYetSubBuyer: "Orders you place from the marketplace will show up here.",
+    noOrdersYetSubFarmer: "When a buyer orders or inquires about your produce, it'll show up here with their contact number.",
+    realShopsNear: "Real shops near you",
+    shopNoteBuyer: "Actual grocery stores and markets in your area — handy for pickup, or to compare prices before you order online.",
+    farmerEyebrow: "Your stall, your price",
+    farmerH1: "List what you've harvested. Set your own price.",
+    farmerSub: "Add quantity, price and your village — buyers nearby find you directly. Update or mark a listing sold out the moment your crate empties.",
+    myListings: "My listings", ordersReceived: "Orders received", sellToRealShops: "Sell to real shops",
+    addAListing: "Add a listing", updateListing: "Update listing", takesUnderMinute: "Takes under a minute.",
+    crop: "Crop", cropPlaceholder: "e.g. Tomato, Coconut...",
+    quantity: "Quantity", unit: "Unit",
+    unitKg: "kg", unitQuintal: "quintal", unitDozen: "dozen", unitCrate: "crate",
+    pricePerUnit: "Price per unit (₹)",
+    yourVillageLocation: "Your village / location", villageListingPlaceholder: "e.g. Kavindapadi, Erode",
+    listThisProduce: "List this produce", saveChanges: "Save changes",
+    noListingsYet: "You haven't listed anything yet",
+    noListingsYetSub: "Fill the form on the left to put your first crate up for sale.",
+    ordersForYourProduce: "Orders for your produce",
+    realShopsThatBuy: "Real shops that buy produce",
+    shopNoteFarmer: "These are real grocery stores, markets and supermarkets near you. Many buy wholesale directly from farmers — call ahead and ask for their purchase manager.",
+    orderProduce: "Order produce",
+    orderFromFarmer: "{{crop}} — order from {{farmer}}",
+    quantityYouWant: "Quantity you want",
+    noteOptional: "Note (optional)", notePlaceholder: "Pickup time, delivery request, etc.",
+    cancel: "Cancel", sendOrder: "Send order",
+    footerText: "VAYAL — a direct farmer-to-buyer produce marketplace · prototype build",
+    // dynamic
+    results: "{{n}} result", resultsPlural: "{{n}} results",
+    ordersCount: "{{n}} order", ordersCountPlural: "{{n}} orders",
+    shopsCount: "{{n}} shops",
+    total: "total",
+    allProduce: "All produce",
+    harvestedToday: "Harvested today", harvestedYesterday: "Harvested yesterday", harvestedDaysAgo: "Harvested {{n}} days ago",
+    left: "left",
+    category: "Category", categoryAll: "All produce", categoryVegetable: "Vegetable", categoryFruit: "Fruit", categoryGrain: "Grain", categoryOther: "Other",
+    viewShop: "View shop", shopProducts: "Shop products", orderAllFromShop: "Order all selected",
+    paymentMethod: "Payment method", cashOnDelivery: "Cash on delivery", upiPayment: "UPI payment",
+    noItemsSelected: "Select at least one product to order.",
+    orderInquire: "Order / Inquire", soldOut: "Sold out", soldOutTag: "SOLD OUT",
+    edit: "Edit", markSold: "Mark sold", relist: "Relist", remove: "Remove",
+    from: "From", loggedNote: "",
+    total_label: "Total",
+    statusPending: "Pending", statusConfirmed: "Accepted", statusFulfilled: "Delivered", statusCancelled: "Cancelled",
+    confirm: "Accept order", decline: "Decline", markFulfilled: "Mark delivered",
+    orderedBy: "Ordered by", shopBadge: "SHOP",
+    getDirections: "Get directions", callShop: "Call shop", openNow: "Open now", closedNow: "Closed now", reviews: "reviews",
+    confirmRemoveListing: "Remove \"{{crop}}\" listing? This can't be undone.",
+    toastWelcome: "Welcome to Vayal, {{name}}!",
+    toastWelcomeBack: "Welcome back, {{name}}!",
+    toastOrderSent: "Order sent to {{farmer}} for {{qty}} {{unit}} of {{crop}}.",
+    toastShopOrderSent: "Order sent for {{n}} products from {{shop}}.",
+    toastUpdatedListing: "Updated {{crop}} listing.",
+    toastListedListing: "Listed {{crop}} — buyers nearby can see it now.",
+    toastMarkedSoldOut: "{{crop}} marked sold out.",
+    toastRelisted: "{{crop}} relisted.",
+    toastRemovedListing: "Removed {{crop}} listing.",
+    toastOrderMarked: "Order marked {{status}}.",
+    justNow: "just now", minsAgo: "{{n}}m ago", hoursAgo: "{{n}}h ago", daysAgo: "{{n}}d ago",
+    signupErrorExists: "An account with this phone number already exists — try logging in instead.",
+    loginErrorNoMatch: "No matching account. Check your phone number and password, or sign up.",
+  },
+  ta: {
+    tagline: "வயலிலிருந்து நேரடியாக",
+    logIn: "உள்நுழை", signUp: "பதிவு செய்யவும்",
+    phoneNumber: "தொலைபேசி எண்", phonePlaceholder: "10-இலக்க மொபைல் எண்",
+    password: "கடவுச்சொல்", passwordPlaceholder: "உங்கள் கடவுச்சொல்",
+    iAmA: "நான் ஒரு", roleBuyer: "வாங்குபவர்", roleFarmer: "விவசாயி", roleShop: "கடை",
+    shopHint: "கடைகள் வாங்குபவர்களைப் போலவே மொத்தமாக உலாவி ஆர்டர் செய்யலாம் — மேலும் விவசாயிகளுக்கு மொத்த விற்பனை நிலையமாகத் தெரிவீர்கள்.",
+    shopName: "கடையின் பெயர்", shopNamePlaceholder: "எ.கா. காவேரி ஃபிரெஷ் மார்ட்",
+    yourName: "உங்கள் பெயர்", yourNamePlaceholder: "எ.கா. முத்து குமார்", yourNamePlaceholderShort: "உங்கள் பெயர்",
+    villageLocation: "ஊர் / இடம்", villagePlaceholder: "எ.கா. ஈரோடு",
+    setPassword: "கடவுச்சொல் அமைக்கவும்", setPasswordPlaceholder: "குறைந்தது 4 எழுத்துகள்",
+    createAccount: "கணக்கை உருவாக்கு",
+    newToVayal: "வயலுக்கு புதியவரா?", createAnAccount: "கணக்கை உருவாக்கு",
+    alreadyHaveAccount: "ஏற்கனவே கணக்கு உள்ளதா?",
+    imBuying: "நான் வாங்குகிறேன்", imSelling: "நான் விற்கிறேன்", logOut: "வெளியேறு",
+    buyerEyebrow: "இடைத்தரகர் இல்லை · கூடுதல் கட்டணம் இல்லை",
+    buyerH1: "விவசாயியின் கூடையிலிருந்து நேரடியாக விளைபொருள் வாங்குங்கள்.",
+    buyerSub: "அருகில் புதியவை என்ன உள்ளதென பாருங்கள், விவசாயி நிர்ணயித்த விலையைப் பாருங்கள், நேரடியாக ஆர்டர் அனுப்புங்கள் — கடந்த வார கிடங்கு சரக்கு அல்ல, இன்றைய அறுவடை.",
+    activeListings: "செயலில் உள்ள பட்டியல்கள்", farmersOnVayal: "வயலில் உள்ள விவசாயிகள்", commissionTaken: "கமிஷன் எடுக்கப்படவில்லை",
+    browseProduce: "விளைபொருட்களை உலாவு", myOrders: "என் ஆர்டர்கள்", nearbyShops: "அருகிலுள்ள கடைகள்",
+    cropOrKeyword: "பயிர் அல்லது சொல்", cropSearchPlaceholder: "எ.கா. தக்காளி, மஞ்சள்...",
+    location: "இடம்", locationSearchPlaceholder: "எ.கா. ஈரோடு, பவானி...",
+    sortBy: "வரிசைப்படுத்து", sortNearest: "அருகில் உள்ளவை முதலில்", sortCheap: "விலை: குறைவு முதல் அதிகம்", sortFresh: "புதியவை முதலில்",
+    freshListings: "புதிய பட்டியல்கள்",
+    noProduceMatch: "அந்த தேடலுக்கு பொருந்தும் விளைபொருள் இல்லை", noProduceMatchSub: "வேறு பயிரை முயற்சிக்கவும், அல்லது இடத்தை விரிவாக்கவும்.",
+    ordersPlaced: "நீங்கள் இட்ட ஆர்டர்கள்",
+    noOrdersYet: "இதுவரை ஆர்டர்கள் இல்லை",
+    noOrdersYetSubBuyer: "நீங்கள் இடும் ஆர்டர்கள் இங்கே காண்பிக்கப்படும்.",
+    noOrdersYetSubFarmer: "ஒரு வாங்குபவர் உங்கள் விளைபொருளுக்கு ஆர்டர் செய்யும்போது, அவர்களின் தொடர்பு எண்ணுடன் இங்கே காண்பிக்கப்படும்.",
+    realShopsNear: "உங்களுக்கு அருகில் உள்ள உண்மையான கடைகள்",
+    shopNoteBuyer: "உங்கள் பகுதியில் உள்ள உண்மையான மளிகைக் கடைகள் மற்றும் சந்தைகள் — எடுத்துச் செல்ல வசதியானது, அல்லது ஆன்லைனில் ஆர்டர் செய்யும் முன் விலைகளை ஒப்பிடலாம்.",
+    farmerEyebrow: "உங்கள் அங்காடி, உங்கள் விலை",
+    farmerH1: "நீங்கள் அறுவடை செய்ததை பட்டியலிடுங்கள். உங்கள் விலையை நிர்ணயிக்கவும்.",
+    farmerSub: "அளவு, விலை மற்றும் உங்கள் ஊரைச் சேர்க்கவும் — அருகிலுள்ள வாங்குபவர்கள் உங்களை நேரடியாகக் கண்டறிவார்கள். உங்கள் கூடை காலியாகும்போது பட்டியலைப் புதுப்பிக்கவும் அல்லது விற்றுத் தீர்ந்தது எனக் குறிக்கவும்.",
+    myListings: "என் பட்டியல்கள்", ordersReceived: "வந்த ஆர்டர்கள்", sellToRealShops: "உண்மையான கடைகளுக்கு விற்கவும்",
+    addAListing: "பட்டியலைச் சேர்", updateListing: "பட்டியலைப் புதுப்பிக்கவும்", takesUnderMinute: "ஒரு நிமிடத்திற்குள் முடியும்.",
+    crop: "பயிர்", cropPlaceholder: "எ.கா. தக்காளி, தேங்காய்...",
+    quantity: "அளவு", unit: "அலகு",
+    unitKg: "கிலோ", unitQuintal: "குவிண்டால்", unitDozen: "டஜன்", unitCrate: "கூடை",
+    pricePerUnit: "ஒரு அலகுக்கான விலை (₹)",
+    yourVillageLocation: "உங்கள் ஊர் / இடம்", villageListingPlaceholder: "எ.கா. கவிந்தாபாடி, ஈரோடு",
+    listThisProduce: "இதைப் பட்டியலிடு", saveChanges: "மாற்றங்களைச் சேமி",
+    noListingsYet: "நீங்கள் இதுவரை எதையும் பட்டியலிடவில்லை",
+    noListingsYetSub: "உங்கள் முதல் கூடையை விற்பனைக்கு வைக்க இடதுபுறமுள்ள படிவத்தை நிரப்பவும்.",
+    ordersForYourProduce: "உங்கள் விளைபொருளுக்கான ஆர்டர்கள்",
+    realShopsThatBuy: "விளைபொருள் வாங்கும் உண்மையான கடைகள்",
+    shopNoteFarmer: "இவை உங்களுக்கு அருகில் உள்ள உண்மையான மளிகைக் கடைகள், சந்தைகள் மற்றும் சூப்பர்மார்க்கெட்டுகள். பலர் விவசாயிகளிடமிருந்து நேரடியாக மொத்தமாக வாங்குகிறார்கள் — முன்கூட்டியே அழைத்து கொள்முதல் மேலாளரிடம் கேளுங்கள்.",
+    orderProduce: "விளைபொருள் ஆர்டர் செய்",
+    orderFromFarmer: "{{crop}} — {{farmer}} இடமிருந்து ஆர்டர்",
+    quantityYouWant: "உங்களுக்கு வேண்டிய அளவு",
+    noteOptional: "குறிப்பு (விருப்பம்)", notePlaceholder: "எடுக்கும் நேரம், டெலிவரி கோரிக்கை போன்றவை.",
+    cancel: "ரத்துசெய்", sendOrder: "ஆர்டர் அனுப்பு",
+    footerText: "VAYAL — விவசாயியிடமிருந்து வாங்குபவருக்கு நேரடி விளைபொருள் சந்தை · முன்மாதிரி",
+    results: "{{n}} முடிவு", resultsPlural: "{{n}} முடிவுகள்",
+    ordersCount: "{{n}} ஆர்டர்", ordersCountPlural: "{{n}} ஆர்டர்கள்",
+    shopsCount: "{{n}} கடைகள்",
+    total: "மொத்தம்",
+    allProduce: "அனைத்து விளைபொருட்கள்",
+    harvestedToday: "இன்று அறுவடை செய்யப்பட்டது", harvestedYesterday: "நேற்று அறுவடை செய்யப்பட்டது", harvestedDaysAgo: "{{n}} நாட்களுக்கு முன் அறுவடை",
+    left: "மீதம்",
+    category: "வகை", categoryAll: "அனைத்து விளைபொருட்கள்", categoryVegetable: "காய்கறி", categoryFruit: "பழம்", categoryGrain: "தானியம்", categoryOther: "மற்றவை",
+    viewShop: "கடையைப் பார்", shopProducts: "கடை பொருட்கள்", orderAllFromShop: "தேர்ந்தெடுத்தவற்றை ஆர்டர் செய்",
+    paymentMethod: "பணம் செலுத்தும் முறை", cashOnDelivery: "டெலிவரியில் பணம்", upiPayment: "UPI மூலம் பணம்",
+    noItemsSelected: "ஆர்டர் செய்ய குறைந்தது ஒரு பொருளையாவது தேர்ந்தெடுக்கவும்.",
+    orderInquire: "ஆர்டர் / விசாரி", soldOut: "விற்றுத் தீர்ந்தது", soldOutTag: "விற்றுத் தீர்ந்தது",
+    edit: "திருத்து", markSold: "விற்றதாகக் குறி", relist: "மீண்டும் பட்டியலிடு", remove: "அகற்று",
+    from: "இடமிருந்து", loggedNote: "",
+    total_label: "மொத்தம்",
+    statusPending: "நிலுவையில்", statusConfirmed: "ஏற்கப்பட்டது", statusFulfilled: "டெலிவரி ஆனது", statusCancelled: "ரத்து செய்யப்பட்டது",
+    confirm: "ஆர்டரை ஏற்று", decline: "நிராகரி", markFulfilled: "டெலிவரி செய்ததாகக் குறி",
+    orderedBy: "ஆர்டர் செய்தவர்", shopBadge: "கடை",
+    getDirections: "வழி பெறவும்", callShop: "கடையை அழை", openNow: "இப்போது திறந்துள்ளது", closedNow: "இப்போது மூடப்பட்டுள்ளது", reviews: "விமர்சனங்கள்",
+    confirmRemoveListing: "\"{{crop}}\" பட்டியலை அகற்றவா? இதை மீட்டெடுக்க முடியாது.",
+    toastWelcome: "வயலுக்கு வரவேற்கிறோம், {{name}}!",
+    toastWelcomeBack: "மீண்டும் வரவேற்கிறோம், {{name}}!",
+    toastOrderSent: "{{farmer}} க்கு {{qty}} {{unit}} {{crop}} க்கான ஆர்டர் அனுப்பப்பட்டது.",
+    toastShopOrderSent: "{{shop}} இலிருந்து {{n}} பொருட்களுக்கான ஆர்டர் அனுப்பப்பட்டது.",
+    toastUpdatedListing: "{{crop}} பட்டியல் புதுப்பிக்கப்பட்டது.",
+    toastListedListing: "{{crop}} பட்டியலிடப்பட்டது — அருகிலுள்ள வாங்குபவர்கள் இப்போது பார்க்கலாம்.",
+    toastMarkedSoldOut: "{{crop}} விற்றுத் தீர்ந்ததாகக் குறிக்கப்பட்டது.",
+    toastRelisted: "{{crop}} மீண்டும் பட்டியலிடப்பட்டது.",
+    toastRemovedListing: "{{crop}} பட்டியல் அகற்றப்பட்டது.",
+    toastOrderMarked: "ஆர்டர் {{status}} எனக் குறிக்கப்பட்டது.",
+    justNow: "இப்போதுதான்", minsAgo: "{{n}} நிமி முன்", hoursAgo: "{{n}} மணி முன்", daysAgo: "{{n}} நாள் முன்",
+    signupErrorExists: "இந்த தொலைபேசி எண்ணுடன் ஏற்கனவே ஒரு கணக்கு உள்ளது — உள்நுழையவும்.",
+    loginErrorNoMatch: "பொருந்தும் கணக்கு இல்லை. தொலைபேசி எண் மற்றும் கடவுச்சொல்லை சரிபார்க்கவும், அல்லது பதிவு செய்யவும்.",
+  }
+};
+let currentLang = 'en';
+function t(key, vars){
+  let s = (I18N[currentLang] && I18N[currentLang][key] !== undefined) ? I18N[currentLang][key] : (I18N.en[key] !== undefined ? I18N.en[key] : key);
+  if(vars){ Object.keys(vars).forEach(k => { s = s.replace(new RegExp('{{'+k+'}}','g'), vars[k]); }); }
+  return s;
+}
+function pluralCount(n, singularKey, pluralKey){
+  return t(n === 1 ? singularKey : pluralKey, {n});
+}
+function unitLabel(u){
+  const map = { kg:'unitKg', quintal:'unitQuintal', dozen:'unitDozen', crate:'unitCrate' };
+  return map[u] ? t(map[u]) : u;
+}
+function applyStaticI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    el.placeholder = t(key);
+  });
+  document.getElementById('authLangEn').classList.toggle('active', currentLang === 'en');
+  document.getElementById('authLangTa').classList.toggle('active', currentLang === 'ta');
+  document.getElementById('appLangEn').classList.toggle('active', currentLang === 'en');
+  document.getElementById('appLangTa').classList.toggle('active', currentLang === 'ta');
+  // login/signup switch note (built via innerHTML, not covered by data-i18n)
+  const isLoginTab = document.getElementById('tabLogin').classList.contains('active');
+  document.getElementById('authSwitchNote').innerHTML = isLoginTab
+    ? `${t('newToVayal')} <button type="button" onclick="switchAuthTab('signup')">${t('createAnAccount')}</button>`
+    : `${t('alreadyHaveAccount')} <button type="button" onclick="switchAuthTab('login')">${t('logIn')}</button>`;
+  // role label shown in the header chip
+  if(currentUser){
+    const roleKey = currentUser.role === 'farmer' ? 'roleFarmer' : (currentUser.role === 'shop' ? 'roleShop' : 'roleBuyer');
+    document.getElementById('chipRole').textContent = t(roleKey);
+  }
+  document.getElementById('formSubmitBtn').textContent = document.getElementById('fEditId').value ? t('saveChanges') : t('listThisProduce');
+  document.getElementById('formTitle').textContent = document.getElementById('fEditId').value ? t('updateListing') : t('addAListing');
+}
+function setLang(lang){
+  currentLang = lang;
+  localStorage.setItem(LANG_KEY, lang);
+  applyStaticI18n();
+  // re-render any dynamic content that contains translated strings
+  if(typeof renderBuyer === 'function' && document.getElementById('appRoot').style.display !== 'none'){
+    renderBuyer();
+    renderMyOrders();
+    renderFarmer();
+    renderIncomingOrders();
+    if(buyerTab === 'shops') renderShops('shopsGridBuyer', 'shopCountBuyer');
+    if(farmerTab === 'shops') renderShops('shopsGridFarmer', 'shopCountFarmer');
+  }
+}
+function loadLang(){
+  const saved = localStorage.getItem(LANG_KEY);
+  currentLang = saved === 'ta' ? 'ta' : 'en';
+}
+
+/* ======================= DATA LAYER ======================= */
+const STORAGE_KEY = 'vayal_listings_v1';
+const CROP_EMOJI = {
+  tomato:'🍅', banana:'🍌', turmeric:'🟡', coconut:'🥥', paddy:'🌾', rice:'🌾',
+  chili:'🌶️', onion:'🧅', mango:'🥭', brinjal:'🍆', okra:'🫛', groundnut:'🥜',
+  sugarcane:'🎋', cotton:'☁️', default:'🌿'
+};
+function emojiFor(crop){
+  const key = crop.trim().toLowerCase();
+  for(const k in CROP_EMOJI){ if(key.includes(k)) return CROP_EMOJI[k]; }
+  return CROP_EMOJI.default;
+}
+
+/* fruit / vegetable / grain classification, used to list & filter produce by category */
+const CROP_CATEGORY = {
+  vegetable: ['tomato','onion','brinjal','okra','chili','chilli','potato','carrot','cabbage','cauliflower','beans','cucumber','pumpkin','ladies finger','lady finger','drumstick','beetroot','radish','spinach','greens','gourd'],
+  fruit: ['banana','coconut','mango','orange','apple','grape','papaya','guava','pomegranate','watermelon','muskmelon','lemon','lime','jackfruit','sapota','pineapple','custard apple'],
+  grain: ['paddy','rice','wheat','millet','ragi','maize','corn'],
+};
+function categoryFor(crop){
+  const key = crop.trim().toLowerCase();
+  for(const cat in CROP_CATEGORY){ if(CROP_CATEGORY[cat].some(k => key.includes(k))) return cat; }
+  return 'other';
+}
+function categoryEmoji(cat){
+  return { vegetable:'🥕', fruit:'🍉', grain:'🌾', other:'🌿' }[cat] || '🌿';
+}
+function categoryKey(cat){
+  return { vegetable:'categoryVegetable', fruit:'categoryFruit', grain:'categoryGrain', other:'categoryOther' }[cat] || 'categoryOther';
+}
+
+/* crop/product name translation — shown when the app is switched to Tamil.
+   Matches known produce keywords inside the (free-text) crop name and swaps
+   in the Tamil term, keeping any part the farmer typed that we don't
+   recognise (e.g. a variety in brackets) as-is. */
+const CROP_NAME_TA = {
+  'custard apple':'சீதாப்பழம்', 'ladies finger':'வெண்டைக்காய்', 'lady finger':'வெண்டைக்காய்',
+  tomato:'தக்காளி', banana:'வாழைப்பழம்', turmeric:'மஞ்சள்', coconut:'தேங்காய்',
+  paddy:'நெல்', rice:'அரிசி', chilli:'மிளகாய்', chili:'மிளகாய்', onion:'வெங்காயம்',
+  mango:'மாம்பழம்', brinjal:'கத்தரிக்காய்', okra:'வெண்டைக்காய்', groundnut:'நிலக்கடலை',
+  sugarcane:'கரும்பு', cotton:'பருத்தி', potato:'உருளைக்கிழங்கு', carrot:'கேரட்',
+  cabbage:'முட்டைக்கோஸ்', cauliflower:'காலிஃபிளவர்', beans:'பீன்ஸ்', cucumber:'வெள்ளரிக்காய்',
+  pumpkin:'பூசணிக்காய்', drumstick:'முருங்கைக்காய்', beetroot:'பீட்ரூட்', radish:'முள்ளங்கி',
+  spinach:'கீரை', greens:'கீரை', gourd:'சுரைக்காய்', orange:'ஆரஞ்சு', apple:'ஆப்பிள்',
+  grape:'திராட்சை', papaya:'பப்பாளி', guava:'கொய்யா', pomegranate:'மாதுளை',
+  watermelon:'தர்பூசணி', muskmelon:'முலாம்பழம்', lemon:'எலுமிச்சை', lime:'எலுமிச்சை',
+  jackfruit:'பலாப்பழம்', sapota:'சப்போட்டா', pineapple:'அன்னாசி', wheat:'கோதுமை',
+  millet:'சிறுதானியம்', ragi:'கேழ்வரகு', maize:'மக்காச்சோளம்', corn:'மக்காச்சோளம்',
+};
+function translateCropName(crop){
+  if(currentLang !== 'ta' || !crop) return crop;
+  const lower = crop.toLowerCase();
+  const keys = Object.keys(CROP_NAME_TA).sort((a,b)=> b.length - a.length);
+  for(const k of keys){
+    const idx = lower.indexOf(k);
+    if(idx === -1) continue;
+    const before = crop.slice(0, idx).trim();
+    const after = crop.slice(idx + k.length).trim();
+    return [before, CROP_NAME_TA[k], after].filter(Boolean).join(' ');
+  }
+  return crop; // no known keyword — show the farmer's original text
+}
+
+const SEED = [
+  {id:'s1', crop:'Turmeric (finger)', qty:120, unit:'kg', price:78, location:'Erode', farmer:'Selvi Rangasamy', daysAgo:0, sold:false},
+  {id:'s2', crop:'Tomato', qty:65, unit:'kg', price:22, location:'Bhavani', farmer:'Muthu Kumar', daysAgo:1, sold:false},
+  {id:'s3', crop:'Coconut', qty:300, unit:'dozen', price:210, location:'Gobichettipalayam', farmer:'Palanisamy K.', daysAgo:0, sold:false},
+  {id:'s4', crop:'Banana (Nendran)', qty:40, unit:'dozen', price:55, location:'Sathyamangalam', farmer:'Kamala Devi', daysAgo:2, sold:false},
+  {id:'s5', crop:'Green Chili', qty:18, unit:'kg', price:60, location:'Erode', farmer:'Ravi Shankar', daysAgo:0, sold:true},
+  {id:'s6', crop:'Paddy', qty:9, unit:'quintal', price:2150, location:'Perundurai', farmer:'Nagaraj S.', daysAgo:3, sold:false},
+  {id:'s7', crop:'Groundnut', qty:75, unit:'kg', price:95, location:'Chennimalai', farmer:'Amsa Vel', daysAgo:1, sold:false},
+  {id:'s8', crop:'Onion', qty:200, unit:'kg', price:24, location:'Erode', farmer:'Karuppusamy R.', daysAgo:0, sold:false},
+];
+
+/* Real shops (Erode, Tamil Nadu) — snapshot from Google Places, for demoing the
+   "real-world shops" directory. See render notes below on wiring this to a live API. */
+const SHOPS = [
+  { name:'Kongu Vegetables', address:'Kongalamman Kovil St, Erode, Tamil Nadu 638001', type:'Vegetable market', rating:4.1, ratingCount:212, phone:'+917598443348', placeId:'ChIJJ230TERvqTsR8yTgE-ekmTI', open24h:true },
+  { name:'VSS Maligai (Wholesale & Retail Grocery)', address:'Muthampalayam Housing Unit, Phase 2, KK Nagar, Erode, Tamil Nadu 638009', type:'Wholesale grocery', rating:4.5, ratingCount:10, phone:'+917904905448', placeId:'ChIJuVo4pPFvqTsRlR6FrzQAaTA', hours:'5:15 AM – 10:30 PM' },
+  { name:'Namma Ooru Market', address:'L-130, Periyar Nagar Rd, Periyar Nagar, Erode, Tamil Nadu 638001', type:'Wholesale produce', rating:4.9, ratingCount:51, phone:'+917010141100', placeId:'ChIJeWVYPYtvqTsRrRsVOocxDGg', hours:'5:30 AM – 10:00 PM' },
+  { name:'Ueir Organic Foods', address:'3/2 MLR Street, Perundurai Rd, V Chatram, Erode, Tamil Nadu 638011', type:'Organic grocery', rating:4.3, ratingCount:556, phone:'+917397782020', placeId:'ChIJK_8i5-hvqTsRd0jeHI8R-4s', hours:'6:30 AM – 10:00 PM' },
+  { name:'GGFM — Grand Global Family Mart', address:'72 Karur Rd, Rajiv Nagar, Moolapalayam, Erode, Tamil Nadu 638002', type:'Grocery store', rating:4.5, ratingCount:76, phone:'+919791747474', placeId:'ChIJI9Z2bNZvqTsR6ADSbB4cCsw', hours:'6:00 AM – 10:00 PM' },
+  { name:'DMart — Periyasemur', address:'Asokapuram, Erode, Tamil Nadu 638004', type:'Supermarket', rating:4.1, ratingCount:2752, phone:null, placeId:'ChIJP6lYEodpqTsR6RhPjZ0XukI', hours:'10:00 AM – 10:00 PM' },
+  { name:'Reliance SMART Bazaar', address:'Reliance Hypermall, Erode - Perundurai Rd, Teachers Colony, Erode, Tamil Nadu 638011', type:'Supermarket', rating:3.9, ratingCount:176, phone:null, placeId:'ChIJB8tNQAZvqTsRtopE7XptSc0', hours:'7:00 AM – 10:00 PM' },
+];
+
+function isOpenNow(shop){
+  if(shop.open24h) return true;
+  if(!shop.hours) return null;
+  const [start,end] = shop.hours.split('–').map(s=>s.trim());
+  const parse = t => { const [time,ap]=t.split(' '); let [h,m]=time.split(':').map(Number); if(ap==='PM'&&h!==12)h+=12; if(ap==='AM'&&h===12)h=0; return h*60+m; };
+  const now = new Date(); const mins = now.getHours()*60 + now.getMinutes();
+  const s = parse(start), e = parse(end);
+  return mins >= s && mins <= e;
+}
+
+function renderShops(gridId, countId){
+  const grid = document.getElementById(gridId);
+  document.getElementById(countId).textContent = t('shopsCount', {n: SHOPS.length});
+  grid.innerHTML = '';
+  SHOPS.forEach(shop => {
+    const open = isOpenNow(shop);
+    const card = document.createElement('div');
+    card.className = 'shop-card';
+    const mapsUrl = `https://www.google.com/maps/place/?q=place_id:${shop.placeId}`;
+    card.innerHTML = `
+      <span class="shop-emoji">🏪</span>
+      <div class="shop-info">
+        <div class="shop-name">${escapeHtml(shop.name)}</div>
+        <div class="shop-addr">${escapeHtml(shop.address)}</div>
+        <div class="shop-meta">
+          <span class="shop-rating">★ ${shop.rating}</span>
+          <span>(${shop.ratingCount} ${t('reviews')})</span>
+          <span>${escapeHtml(shop.type)}</span>
+          ${open !== null ? `<span class="shop-open ${open?'yes':'no'}">${open?t('openNow'):t('closedNow')}</span>` : ''}
+        </div>
+        <div class="shop-actions">
+          <a class="btn btn-ghost btn-small" href="${mapsUrl}" target="_blank" rel="noopener">${t('getDirections')}</a>
+          ${shop.phone ? `<a class="btn btn-turmeric btn-small" href="tel:${shop.phone}">${t('callShop')}</a>` : ''}
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function loadListings(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(raw){ try{ return JSON.parse(raw); }catch(e){ /* fall through */ } }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED));
+  return SEED.slice();
+}
+function saveListings(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+const ORDERS_KEY = 'vayal_orders_v1';
+function loadOrders(){
+  try{ return JSON.parse(localStorage.getItem(ORDERS_KEY)) || []; }catch(e){ return []; }
+}
+function saveOrders(list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list)); }
+
+let listings = loadListings();
+let orders = loadOrders();
+let currentRole = 'buyer';
+let activeChip = 'all';
+let modalListingId = null;
+let buyerTab = 'browse';
+let farmerTab = 'listings';
+
+/* ======================= AUTH ======================= */
+const USERS_KEY = 'vayal_users_v1';
+const SESSION_KEY = 'vayal_session_v1';
+let currentUser = null;
+
+function loadUsers(){
+  try{ return JSON.parse(localStorage.getItem(USERS_KEY)) || []; }catch(e){ return []; }
+}
+function saveUsers(users){ localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+
+function switchAuthTab(tab){
+  const isLogin = tab === 'login';
+  document.getElementById('tabLogin').classList.toggle('active', isLogin);
+  document.getElementById('tabSignup').classList.toggle('active', !isLogin);
+  document.getElementById('loginForm').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('authSwitchNote').innerHTML = isLogin
+    ? `${t('newToVayal')} <button type="button" onclick="switchAuthTab('signup')">${t('createAnAccount')}</button>`
+    : `${t('alreadyHaveAccount')} <button type="button" onclick="switchAuthTab('login')">${t('logIn')}</button>`;
+  hideAuthErrors();
+}
+
+function pickRole(role){
+  document.getElementById('pickBuyer').classList.toggle('picked', role === 'buyer');
+  document.getElementById('pickFarmer').classList.toggle('picked', role === 'farmer');
+  document.getElementById('pickShop').classList.toggle('picked', role === 'shop');
+  document.getElementById('shopHint').style.display = role === 'shop' ? 'block' : 'none';
+  document.getElementById('shopNameField').style.display = role === 'shop' ? 'block' : 'none';
+}
+
+function hideAuthErrors(){
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('signupError').classList.remove('show');
+}
+function showAuthError(id, msg){
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function handleSignup(e){
+  e.preventDefault();
+  const users = loadUsers();
+  const phone = document.getElementById('signupPhone').value.trim();
+  const role = document.querySelector('input[name="signupRole"]:checked').value;
+  const name = document.getElementById('signupName').value.trim();
+  const location = document.getElementById('signupLocation').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const shopName = document.getElementById('signupShopName').value.trim();
+
+  if(users.some(u => u.phone === phone)){
+    showAuthError('signupError', t('signupErrorExists'));
+    return false;
+  }
+  const user = { id:'u'+Date.now(), phone, role, name, location, password, shopName: role === 'shop' ? shopName : '' };
+  users.push(user);
+  saveUsers(users);
+  loginUser(user);
+  showToast(t('toastWelcome', {name: (shopName || name).split(' ')[0]}));
+  return false;
+}
+
+function handleLogin(e){
+  e.preventDefault();
+  const phone = document.getElementById('loginPhone').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const users = loadUsers();
+  const user = users.find(u => u.phone === phone && u.password === password);
+  if(!user){
+    showAuthError('loginError', t('loginErrorNoMatch'));
+    return false;
+  }
+  loginUser(user);
+  showToast(t('toastWelcomeBack', {name: user.name.split(' ')[0]}));
+  return false;
+}
+
+function loginUser(user){
+  currentUser = user;
+  localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'block';
+  document.getElementById('chipName').textContent = user.role === 'shop' && user.shopName ? user.shopName : user.name;
+  document.getElementById('chipRole').textContent = t(user.role === 'farmer' ? 'roleFarmer' : (user.role === 'shop' ? 'roleShop' : 'roleBuyer'));
+  document.getElementById('loginForm').reset();
+  document.getElementById('signupForm').reset();
+  hideAuthErrors();
+  switchBuyerTab('browse');
+  switchFarmerTab('listings');
+  setRole(user.role === 'buyer' ? 'buyer' : 'farmer');
+}
+
+function logout(){
+  currentUser = null;
+  localStorage.removeItem(SESSION_KEY);
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('appRoot').style.display = 'none';
+  switchAuthTab('login');
+}
+
+function checkSession(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(SESSION_KEY));
+    if(saved && saved.id){ loginUser(saved); return true; }
+  }catch(e){ /* no session */ }
+  return false;
+}
+
+/* ======================= ROLE SWITCH ======================= */
+function setRole(role){
+  currentRole = role;
+  document.getElementById('viewBuyer').style.display = role === 'buyer' ? 'block' : 'none';
+  document.getElementById('viewFarmer').style.display = role === 'farmer' ? 'block' : 'none';
+  document.getElementById('btnBuyer').classList.toggle('active', role === 'buyer');
+  document.getElementById('btnFarmer').classList.toggle('active', role === 'farmer');
+  if(role === 'buyer'){
+    renderBuyer();
+    renderMyOrders();
+  } else {
+    if(currentUser){
+      document.getElementById('fName').value = (currentUser.role === 'shop' && currentUser.shopName) ? currentUser.shopName : currentUser.name;
+      if(!document.getElementById('fLoc').value) document.getElementById('fLoc').value = currentUser.location;
+    }
+    renderFarmer();
+    renderIncomingOrders();
+  }
+}
+
+function switchBuyerTab(tab){
+  buyerTab = tab;
+  document.querySelectorAll('#buyerSubnav .subnav-btn').forEach((b,i)=> b.classList.toggle('active', ['browse','orders','shops'][i]===tab));
+  document.getElementById('browseSection').style.display = tab === 'browse' ? 'block' : 'none';
+  document.getElementById('ordersSection').style.display = tab === 'orders' ? 'block' : 'none';
+  document.getElementById('buyerShopsSection').style.display = tab === 'shops' ? 'block' : 'none';
+  if(tab === 'orders') renderMyOrders();
+  if(tab === 'shops') renderShops('shopsGridBuyer', 'shopCountBuyer');
+}
+
+function switchFarmerTab(tab){
+  farmerTab = tab;
+  document.querySelectorAll('#farmerSubnav .subnav-btn').forEach((b,i)=> b.classList.toggle('active', ['listings','orders','shops'][i]===tab));
+  document.getElementById('farmerListingsSection').style.display = tab === 'listings' ? 'block' : 'none';
+  document.getElementById('farmerOrdersSection').style.display = tab === 'orders' ? 'block' : 'none';
+  document.getElementById('farmerShopsSection').style.display = tab === 'shops' ? 'block' : 'none';
+  if(tab === 'orders') renderIncomingOrders();
+  if(tab === 'shops') renderShops('shopsGridFarmer', 'shopCountFarmer');
+}
+
+/* ======================= BUYER VIEW ======================= */
+function uniqueCrops(){
+  const set = new Set(listings.map(l => l.crop.split('(')[0].trim()));
+  return Array.from(set);
+}
+
+function renderChips(){
+  const wrap = document.getElementById('cropChips');
+  const crops = uniqueCrops();
+  wrap.innerHTML = '';
+  const allChip = document.createElement('button');
+  allChip.className = 'chip' + (activeChip === 'all' ? ' active' : '');
+  allChip.textContent = t('allProduce');
+  allChip.onclick = () => { activeChip = 'all'; renderBuyer(); };
+  wrap.appendChild(allChip);
+  crops.forEach(c => {
+    const chip = document.createElement('button');
+    chip.className = 'chip' + (activeChip === c ? ' active' : '');
+    chip.textContent = translateCropName(c);
+    chip.onclick = () => { activeChip = c; renderBuyer(); };
+    wrap.appendChild(chip);
+  });
+}
+
+function freshLabel(daysAgo){
+  if(daysAgo === 0) return t('harvestedToday');
+  if(daysAgo === 1) return t('harvestedYesterday');
+  return t('harvestedDaysAgo', {n: daysAgo});
+}
+
+function renderBuyer(){
+  renderChips();
+  const cropQ = document.getElementById('searchCrop').value.trim().toLowerCase();
+  const locQ = document.getElementById('searchLoc').value.trim().toLowerCase();
+  const sortBy = document.getElementById('sortBy').value;
+  const catQ = document.getElementById('filterCategory').value;
+
+  let items = listings.filter(l => {
+    if(activeChip !== 'all' && !l.crop.toLowerCase().startsWith(activeChip.toLowerCase())) return false;
+    if(cropQ && !l.crop.toLowerCase().includes(cropQ)) return false;
+    if(locQ && !l.location.toLowerCase().includes(locQ)) return false;
+    if(catQ !== 'all' && categoryFor(l.crop) !== catQ) return false;
+    return true;
+  });
+
+  items = items.slice().sort((a,b)=>{
+    if(a.sold !== b.sold) return a.sold ? 1 : -1;
+    if(sortBy === 'cheap') return a.price - b.price;
+    if(sortBy === 'fresh') return a.daysAgo - b.daysAgo;
+    return 0;
+  });
+
+  document.getElementById('statListings').textContent = listings.filter(l=>!l.sold).length;
+  document.getElementById('statFarmers').textContent = new Set(listings.map(l=>l.farmer)).size;
+  document.getElementById('listingCount').textContent = pluralCount(items.length, 'results', 'resultsPlural');
+
+  const grid = document.getElementById('listingGrid');
+  grid.innerHTML = '';
+  document.getElementById('emptyBuyer').style.display = items.length ? 'none' : 'block';
+
+  items.forEach((l, i) => {
+    const card = document.createElement('div');
+    card.className = 'tag-card' + (l.sold ? ' sold' : '');
+    card.setAttribute('data-sold-label', t('soldOutTag'));
+    card.style.setProperty('--tilt', (i % 2 === 0 ? '-0.6deg' : '0.6deg'));
+    card.innerHTML = `
+      <div class="crop-row">
+        <span class="crop-emoji">${emojiFor(l.crop)}</span>
+        <div>
+          <div class="crop-name">${escapeHtml(translateCropName(l.crop))}</div>
+          <div class="farmer-line">${escapeHtml(l.farmer)} · ${escapeHtml(l.location)} · <button type="button" class="shop-link-btn" onclick="openShopModal('${escapeHtml(l.farmer).replace(/'/g,"\\'")}')">${t('viewShop')}</button></div>
+        </div>
+      </div>
+      <span class="cat-badge cat-${categoryFor(l.crop)}">${categoryEmoji(categoryFor(l.crop))} ${t(categoryKey(categoryFor(l.crop)))}</span>
+      <div class="meta-row">
+        <div class="price">₹${l.price}<span> /${unitLabel(l.unit)}</span></div>
+        <div class="qty">${l.qty} ${unitLabel(l.unit)} ${t('left')}</div>
+      </div>
+      <div class="stamp">${freshLabel(l.daysAgo)}</div>
+      <div class="card-actions">
+        <button class="btn btn-primary btn-small" ${l.sold?'disabled style="opacity:.5;cursor:not-allowed;"':''} onclick="openInquiry('${l.id}')">
+          ${l.sold ? t('soldOut') : t('orderInquire')}
+        </button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+['searchCrop','searchLoc'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', renderBuyer);
+});
+document.getElementById('sortBy').addEventListener('change', renderBuyer);
+document.getElementById('filterCategory').addEventListener('change', renderBuyer);
+
+/* ======================= INQUIRY MODAL ======================= */
+function openInquiry(id){
+  const l = listings.find(x => x.id === id);
+  if(!l || l.sold) return;
+  modalListingId = id;
+  document.getElementById('modalCropName').textContent = t('orderFromFarmer', {crop: translateCropName(l.crop), farmer: l.farmer});
+  document.getElementById('modalFarmerLine').textContent = `₹${l.price}/${unitLabel(l.unit)} · ${l.qty} ${unitLabel(l.unit)} available · ${l.location}`;
+  document.getElementById('orderQty').max = l.qty;
+  if(currentUser && currentUser.role === 'buyer'){
+    document.getElementById('buyerName').value = currentUser.name;
+    document.getElementById('buyerPhone').value = currentUser.phone;
+  }
+  document.getElementById('inquiryOverlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('inquiryOverlay').classList.remove('show');
+  document.getElementById('inquiryOverlay').querySelector('form').reset();
+  modalListingId = null;
+  updatePayOptUI('payOptionsInquiry');
+}
+function updatePayOptUI(groupId){
+  const wrap = document.getElementById(groupId);
+  if(!wrap) return;
+  wrap.querySelectorAll('.pay-opt').forEach(label => {
+    label.classList.toggle('checked', label.querySelector('input').checked);
+  });
+}
+function submitInquiry(e){
+  e.preventDefault();
+  const l = listings.find(x => x.id === modalListingId);
+  if(!l) return false;
+  const qty = parseFloat(document.getElementById('orderQty').value);
+  const order = {
+    id: 'o' + Date.now(),
+    listingId: l.id,
+    crop: l.crop,
+    unit: l.unit,
+    price: l.price,
+    qty: qty,
+    total: Math.round(qty * l.price),
+    farmer: l.farmer,
+    location: l.location,
+    buyerId: currentUser ? currentUser.id : null,
+    buyerRole: currentUser ? currentUser.role : 'buyer',
+    buyerName: document.getElementById('buyerName').value.trim(),
+    buyerPhone: document.getElementById('buyerPhone').value.trim(),
+    note: document.getElementById('orderNote').value.trim(),
+    paymentMethod: document.querySelector('input[name="payMethodInquiry"]:checked').value,
+    status: 'pending',
+    createdAt: Date.now()
+  };
+  orders.push(order);
+  saveOrders(orders);
+  showToast(t('toastOrderSent', {farmer: l.farmer, qty: qty, unit: unitLabel(l.unit), crop: translateCropName(l.crop)}));
+  closeModal();
+  renderMyOrders();
+  renderIncomingOrders();
+  return false;
+}
+document.getElementById('inquiryOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'inquiryOverlay') closeModal();
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){ closeModal(); closeShopModal(); }
+});
+
+/* ======================= SHOP (SELLER) MODAL — order every product from one shop ======================= */
+let shopModalSeller = null;
+function openShopModal(sellerName){
+  shopModalSeller = sellerName;
+  const items = listings.filter(l => l.farmer === sellerName && !l.sold);
+  if(!items.length) return;
+  document.getElementById('shopModalName').textContent = `🏬 ${sellerName}`;
+  document.getElementById('shopModalSub').textContent = `${pluralCount(items.length, 'results', 'resultsPlural')} · ${items[0].location}`;
+  const list = document.getElementById('shopItemList');
+  list.innerHTML = '';
+  const byCat = {};
+  items.forEach(l => { const c = categoryFor(l.crop); (byCat[c] = byCat[c] || []).push(l); });
+  ['vegetable','fruit','grain','other'].forEach(cat => {
+    if(!byCat[cat] || !byCat[cat].length) return;
+    const label = document.createElement('div');
+    label.className = 'cat-group-label';
+    label.textContent = `${categoryEmoji(cat)} ${t(categoryKey(cat))}`;
+    list.appendChild(label);
+    byCat[cat].forEach(l => {
+      const row = document.createElement('div');
+      row.className = 'shop-item-row';
+      row.dataset.listingId = l.id;
+      row.innerHTML = `
+        <input type="checkbox" checked onchange="onShopItemChange('${l.id}')">
+        <span class="crop-emoji" style="font-size:20px;">${emojiFor(l.crop)}</span>
+        <div class="sir-info">
+          <div class="sir-name">${escapeHtml(translateCropName(l.crop))}</div>
+          <div class="sir-sub">₹${l.price}/${unitLabel(l.unit)} · ${l.qty} ${unitLabel(l.unit)} ${t('left')}</div>
+        </div>
+        <input type="number" class="sir-qty" value="1" min="0.1" max="${l.qty}" step="0.1" onchange="onShopItemChange('${l.id}')">
+      `;
+      list.appendChild(row);
+    });
+  });
+  if(currentUser){
+    document.getElementById('shopBuyerName').value = currentUser.name;
+    document.getElementById('shopBuyerPhone').value = currentUser.phone;
+  }
+  document.getElementById('shopOrderError').classList.remove('show');
+  updateShopModalTotal();
+  document.getElementById('shopOverlay').classList.add('show');
+}
+function onShopItemChange(id){
+  const row = document.querySelector(`#shopItemList .shop-item-row[data-listing-id="${id}"]`);
+  if(!row) return;
+  const checked = row.querySelector('input[type="checkbox"]').checked;
+  row.classList.toggle('unchecked', !checked);
+  updateShopModalTotal();
+}
+function updateShopModalTotal(){
+  let total = 0;
+  document.querySelectorAll('#shopItemList .shop-item-row').forEach(row => {
+    if(!row.querySelector('input[type="checkbox"]').checked) return;
+    const l = listings.find(x => x.id === row.dataset.listingId);
+    const qty = parseFloat(row.querySelector('.sir-qty').value) || 0;
+    if(l) total += qty * l.price;
+  });
+  document.getElementById('shopModalTotal').textContent = `₹${Math.round(total)}`;
+}
+function closeShopModal(){
+  const overlay = document.getElementById('shopOverlay');
+  if(!overlay) return;
+  overlay.classList.remove('show');
+  overlay.querySelector('form').reset();
+  shopModalSeller = null;
+  updatePayOptUI('payOptionsShop');
+}
+function submitShopOrder(e){
+  e.preventDefault();
+  const rows = Array.from(document.querySelectorAll('#shopItemList .shop-item-row'))
+    .filter(row => row.querySelector('input[type="checkbox"]').checked);
+  if(!rows.length){
+    showAuthError('shopOrderError', t('noItemsSelected'));
+    return false;
+  }
+  const buyerName = document.getElementById('shopBuyerName').value.trim();
+  const buyerPhone = document.getElementById('shopBuyerPhone').value.trim();
+  const note = document.getElementById('shopOrderNote').value.trim();
+  const paymentMethod = document.querySelector('input[name="payMethodShop"]:checked').value;
+  const groupId = 'grp' + Date.now();
+  let count = 0;
+  rows.forEach(row => {
+    const l = listings.find(x => x.id === row.dataset.listingId);
+    if(!l) return;
+    const qty = parseFloat(row.querySelector('.sir-qty').value);
+    if(!qty || qty <= 0) return;
+    orders.push({
+      id: 'o' + Date.now() + '_' + l.id,
+      listingId: l.id,
+      crop: l.crop,
+      unit: l.unit,
+      price: l.price,
+      qty: qty,
+      total: Math.round(qty * l.price),
+      farmer: l.farmer,
+      location: l.location,
+      buyerId: currentUser ? currentUser.id : null,
+      buyerRole: currentUser ? currentUser.role : 'buyer',
+      buyerName, buyerPhone, note, paymentMethod,
+      groupId,
+      status: 'pending',
+      createdAt: Date.now()
+    });
+    count++;
+  });
+  saveOrders(orders);
+  showToast(t('toastShopOrderSent', {n: count, shop: shopModalSeller}));
+  closeShopModal();
+  renderMyOrders();
+  renderIncomingOrders();
+  return false;
+}
+document.getElementById('shopOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'shopOverlay') closeShopModal();
+});
+
+/* ======================= FARMER VIEW ======================= */
+function sellerDisplayName(user){
+  if(!user) return '';
+  return (user.role === 'shop' && user.shopName) ? user.shopName : user.name;
+}
+function renderFarmer(){
+  const mine = currentUser ? listings.filter(l => l.farmer === sellerDisplayName(currentUser)) : [];
+  document.getElementById('myListingCount').textContent = `${mine.length} ${t('total')}`;
+  const wrap = document.getElementById('myListings');
+  wrap.innerHTML = '';
+  document.getElementById('emptyFarmer').style.display = mine.length ? 'none' : 'block';
+
+  mine.slice().reverse().forEach(l => {
+    const row = document.createElement('div');
+    row.className = 'my-listing-row' + (l.sold ? ' sold' : '');
+    row.innerHTML = `
+      <span class="crop-emoji">${emojiFor(l.crop)}</span>
+      <div class="mlr-info">
+        <div class="name">${escapeHtml(translateCropName(l.crop))}</div>
+        <div class="sub">₹${l.price}/${unitLabel(l.unit)} · ${l.qty} ${unitLabel(l.unit)} · ${escapeHtml(l.location)} ${l.sold ? '· ' + t('soldOutTag') : ''}</div>
+      </div>
+      <div class="mlr-actions">
+        <button class="icon-btn" onclick="editListing('${l.id}')">${t('edit')}</button>
+        <button class="icon-btn" onclick="toggleSold('${l.id}')">${l.sold ? t('relist') : t('markSold')}</button>
+        <button class="icon-btn danger" onclick="removeListing('${l.id}')">${t('remove')}</button>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+function handleAddListing(e){
+  e.preventDefault();
+  const editId = document.getElementById('fEditId').value;
+  const data = {
+    crop: document.getElementById('fCrop').value.trim(),
+    qty: parseFloat(document.getElementById('fQty').value),
+    unit: document.getElementById('fUnit').value,
+    price: parseFloat(document.getElementById('fPrice').value),
+    location: document.getElementById('fLoc').value.trim(),
+    farmer: document.getElementById('fName').value.trim(),
+  };
+  if(editId){
+    const l = listings.find(x => x.id === editId);
+    Object.assign(l, data);
+    showToast(t('toastUpdatedListing', {crop: translateCropName(data.crop)}));
+  } else {
+    listings.push({ id:'l'+Date.now(), daysAgo:0, sold:false, ...data });
+    showToast(t('toastListedListing', {crop: translateCropName(data.crop)}));
+  }
+  saveListings(listings);
+  resetForm();
+  renderFarmer();
+  return false;
+}
+
+function editListing(id){
+  const l = listings.find(x => x.id === id);
+  if(!l) return;
+  document.getElementById('fEditId').value = l.id;
+  document.getElementById('fCrop').value = l.crop;
+  document.getElementById('fQty').value = l.qty;
+  document.getElementById('fUnit').value = l.unit;
+  document.getElementById('fPrice').value = l.price;
+  document.getElementById('fLoc').value = l.location;
+  document.getElementById('fName').value = l.farmer;
+  document.getElementById('formTitle').textContent = t('updateListing');
+  document.getElementById('formSubmitBtn').textContent = t('saveChanges');
+  document.getElementById('listingForm').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function resetForm(){
+  document.getElementById('listingForm').reset();
+  document.getElementById('fEditId').value = '';
+  document.getElementById('formTitle').textContent = t('addAListing');
+  document.getElementById('formSubmitBtn').textContent = t('listThisProduce');
+}
+
+function toggleSold(id){
+  const l = listings.find(x => x.id === id);
+  if(!l) return;
+  l.sold = !l.sold;
+  saveListings(listings);
+  showToast(l.sold ? t('toastMarkedSoldOut', {crop: translateCropName(l.crop)}) : t('toastRelisted', {crop: translateCropName(l.crop)}));
+  renderFarmer();
+}
+
+function removeListing(id){
+  const l = listings.find(x => x.id === id);
+  if(!l) return;
+  if(!confirm(t('confirmRemoveListing', {crop: translateCropName(l.crop)}))) return;
+  listings = listings.filter(x => x.id !== id);
+  saveListings(listings);
+  showToast(t('toastRemovedListing', {crop: translateCropName(l.crop)}));
+  renderFarmer();
+}
+
+/* ======================= ORDERS ======================= */
+function timeAgo(ts){
+  const mins = Math.floor((Date.now() - ts) / 60000);
+  if(mins < 1) return t('justNow');
+  if(mins < 60) return t('minsAgo', {n: mins});
+  const hrs = Math.floor(mins / 60);
+  if(hrs < 24) return t('hoursAgo', {n: hrs});
+  return t('daysAgo', {n: Math.floor(hrs/24)});
+}
+function statusLabel(s){
+  return { pending:t('statusPending'), confirmed:t('statusConfirmed'), fulfilled:t('statusFulfilled'), cancelled:t('statusCancelled') }[s] || s;
+}
+function payLabel(p){
+  return p === 'upi' ? t('upiPayment') : t('cashOnDelivery');
+}
+
+function renderMyOrders(){
+  if(!currentUser) return;
+  const mine = orders.filter(o => o.buyerId === currentUser.id).sort((a,b)=> b.createdAt - a.createdAt);
+  document.getElementById('myOrderCount').textContent = mine.length;
+  document.getElementById('myOrderCount2').textContent = pluralCount(mine.length, 'ordersCount', 'ordersCountPlural');
+  const wrap = document.getElementById('myOrdersList');
+  wrap.innerHTML = '';
+  document.getElementById('emptyOrders').style.display = mine.length ? 'none' : 'block';
+
+  mine.forEach(o => {
+    const card = document.createElement('div');
+    card.className = 'order-card';
+    card.innerHTML = `
+      <div class="order-top">
+        <div>
+          <div class="order-crop">${emojiFor(o.crop)} ${escapeHtml(translateCropName(o.crop))}</div>
+          <div class="order-sub">${t('from')} ${escapeHtml(o.farmer)} · ${escapeHtml(o.location)} · ${timeAgo(o.createdAt)}</div>
+        </div>
+        <div class="order-total"><span class="lbl">${t('total_label')}</span>₹${o.total}</div>
+      </div>
+      ${o.note ? `<div class="order-note">"${escapeHtml(o.note)}"</div>` : ''}
+      <div class="order-bottom">
+        <span class="qty">${o.qty} ${unitLabel(o.unit)} × ₹${o.price}</span>
+        <span style="display:flex; gap:8px; align-items:center;">
+          <span class="pay-pill">${payLabel(o.paymentMethod)}</span>
+          <span class="status-pill status-${o.status}">${statusLabel(o.status)}</span>
+        </span>
+      </div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+function renderIncomingOrders(){
+  if(!currentUser) return;
+  const mine = orders.filter(o => o.farmer === sellerDisplayName(currentUser)).sort((a,b)=> b.createdAt - a.createdAt);
+  document.getElementById('incomingOrderCount').textContent = mine.length;
+  document.getElementById('incomingOrderCount2').textContent = pluralCount(mine.length, 'ordersCount', 'ordersCountPlural');
+  const wrap = document.getElementById('incomingOrdersList');
+  wrap.innerHTML = '';
+  document.getElementById('emptyIncoming').style.display = mine.length ? 'none' : 'block';
+
+  mine.forEach(o => {
+    const card = document.createElement('div');
+    card.className = 'order-card';
+    const actions = o.status === 'pending'
+      ? `<button class="icon-btn" onclick="setOrderStatus('${o.id}','confirmed')">${t('confirm')}</button>
+         <button class="icon-btn danger" onclick="setOrderStatus('${o.id}','cancelled')">${t('decline')}</button>`
+      : o.status === 'confirmed'
+      ? `<button class="icon-btn" onclick="setOrderStatus('${o.id}','fulfilled')">${t('markFulfilled')}</button>
+         <button class="icon-btn danger" onclick="setOrderStatus('${o.id}','cancelled')">${t('cancel')}</button>`
+      : '';
+    card.innerHTML = `
+      <div class="order-top">
+        <div>
+          <div class="order-crop">${emojiFor(o.crop)} ${escapeHtml(translateCropName(o.crop))}</div>
+          <div class="order-sub">${t('orderedBy')} ${escapeHtml(o.buyerName)}${o.buyerRole==='shop' ? ` <span class="status-pill status-confirmed" style="margin-left:4px;">${t('shopBadge')}</span>` : ''} · ${timeAgo(o.createdAt)}</div>
+          <div class="order-contact">📞 ${escapeHtml(o.buyerPhone)}</div>
+        </div>
+        <div class="order-total"><span class="lbl">${t('total_label')}</span>₹${o.total}</div>
+      </div>
+      ${o.note ? `<div class="order-note">"${escapeHtml(o.note)}"</div>` : ''}
+      <div class="order-bottom">
+        <span class="qty">${o.qty} ${unitLabel(o.unit)} × ₹${o.price}</span>
+        <span style="display:flex; gap:8px; align-items:center;">
+          <span class="pay-pill">${payLabel(o.paymentMethod)}</span>
+          <span class="status-pill status-${o.status}">${statusLabel(o.status)}</span>
+        </span>
+      </div>
+      ${actions ? `<div class="order-actions" style="margin-top:10px;">${actions}</div>` : ''}
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+function setOrderStatus(id, status){
+  const o = orders.find(x => x.id === id);
+  if(!o) return;
+  o.status = status;
+  saveOrders(orders);
+  showToast(t('toastOrderMarked', {status: statusLabel(status).toLowerCase()}));
+  renderIncomingOrders();
+}
+
+/* ======================= TOAST ======================= */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 3200);
+}
+
+/* ======================= INIT ======================= */
+loadLang();
+applyStaticI18n();
+checkSession();
+</script>
+</body>
+</html>
