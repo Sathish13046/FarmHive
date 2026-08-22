@@ -144,3 +144,65 @@ Create a PostgreSQL database named:
 
 ```text
 vayal
+```
+## Project Information
+
+### Project Name
+
+**VAYAL**
+
+### Project Type
+
+**Farmers' Direct Produce Marketplace**
+
+### Domain
+
+**Agriculture / Supply Chain**
+
+### Purpose
+
+VAYAL is designed to help farmers sell agricultural products directly to buyers while providing a simple, efficient, and transparent digital marketplace.
+
+---
+
+## Future Enhancements
+
+Future versions of the VAYAL backend may include:
+
+- Online Payments
+- Order Management
+- Real-Time Notifications
+- Advanced Search
+- Product Recommendations
+- Location-Based Services
+- Image Upload
+- Order Tracking
+- Admin Dashboard
+- Analytics
+- Rating and Review System
+
+---
+
+## License
+
+This project is developed as part of the **VAYAL Agricultural Marketplace Application**.
+
+Copyright © 2026 VAYAL Development Team.
+
+All rights reserved.
+
+---
+
+## Development Team
+
+**VAYAL Development Team**
+
+---
+
+## Conclusion
+
+VAYAL provides a reliable backend foundation for a direct farmer-to-buyer marketplace.
+
+The backend combines **Node.js, Express.js, TypeScript, Prisma, PostgreSQL, and JWT Authentication** to provide a scalable, secure, and efficient application architecture.
+
+The system enables secure user authentication, product listing management, database operations, and communication between the frontend and backend.
